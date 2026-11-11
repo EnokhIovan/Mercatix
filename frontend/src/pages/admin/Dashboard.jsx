@@ -127,7 +127,7 @@ function Dashboard() {
           <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-5 sm:px-8">
             <div>
               <h1 className="text-xl font-bold text-slate-900">
-                Dashboard
+                Dashboard Admin
               </h1>
               <p className="mt-1 text-sm text-slate-500">
                 Overview of your business.

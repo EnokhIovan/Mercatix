@@ -1,0 +1,53 @@
+{
+  "brand": {
+    "name": "Mercatix",
+    "style": "Deep Violet & Lavender",
+    "personality": ["Modern", "Friendly", "Vibrant", "Elegant"]
+  },
+  "colors": {
+    "primary": {
+      "950": "#2E1065",
+      "900": "#4C1D95",
+      "700": "#6D28D9",
+      "600": "#7C3AED",
+      "400": "#A78BFA"
+    },
+    "lavender": {
+      "300": "#C4B5FD",
+      "200": "#DDD6FE",
+      "100": "#EDE9FE",
+      "50": "#F5F3FF"
+    },
+    "neutral": {
+      "dark": "#27233A",
+      "secondary": "#6B6880",
+      "muted": "#A09CAF",
+      "border": "#E9E5F5",
+      "background": "#FAFAFC",
+      "surface": "#FFFFFF"
+    },
+    "status": {
+      "success": "#16A34A",
+      "danger": "#EF4444",
+      "warning": "#F59E0B",
+      "info": "#3B82F6"
+    }
+  },
+  "gradients": {
+    "hero": "linear-gradient(120deg, #2E1065, #4C1D95 55%, #7C3AED)",
+    "soft": "linear-gradient(135deg, #EDE9FE, #F5F3FF)",
+    "vibrant": "linear-gradient(135deg, #6D28D9, #A78BFA)"
+  },
+  "typography": {
+    "fontFamily": "Inter, sans-serif",
+    "headingWeight": 800,
+    "bodyWeight": 400,
+    "buttonWeight": 700
+  },
+  "radius": {
+    "small": "8px",
+    "medium": "12px",
+    "large": "18px",
+    "extraLarge": "24px"
+  }
+}

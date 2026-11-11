@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "../pages/auth/Login";
-import Dashboard from "../pages/dashboards/Dashboard";
+// import Dashboard from "../pages/DashboardRouting";
 import NotFound from "../pages/NotFound";
-import CustomerDashboard from "../pages/dashboards/CustomerDashboard";
+import CustomerExplore from "../pages/customer/Explore";
+import CustomerDashboard from "../pages/customer/Dashboard";
+import CustomerProfile from "../pages/customer/Profile";
 
 function AppRoutes() {
   return (
@@ -11,9 +13,11 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/explore" element={<CustomerExplore />} />
+        <Route path="/dashboard" element={<CustomerDashboard />} />
+        <Route path="/profile" element={<CustomerProfile />} />
 
-        <Route path="*" element={<NotFound />}/>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

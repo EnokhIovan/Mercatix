@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
-import AdminDashboard from "./AdminDashboard";
-import MerchantDashboard from "./MerchantDashboard";
-import CustomerDashboard from "./CustomerDashboard";
+import AdminDashboard from "./admin/Dashboard";
+import MerchantDashboard from "./merchant/Dashboard";
+import CustomerDashboard from "./customer/Dashboard.jsx";
+import * as Customer from "./pages/customer";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -24,8 +25,8 @@ export default function Dashboard() {
         const response = await fetch("http://localhost:8000/api/user", {
           headers: {
             Authorization: `Bearer ${token}`,
-            Accept: "application/json"
-          }
+            Accept: "application/json",
+          },
         });
 
         if (response.status === 401) {
@@ -66,7 +67,7 @@ export default function Dashboard() {
       return <MerchantDashboard />;
 
     case "customer":
-      return <CustomerDashboard />;
+      return <CustomerExplore />;
 
     default:
       return <Navigate to="/unauthorized" replace />;
