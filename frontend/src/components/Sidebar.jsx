@@ -1,5 +1,6 @@
 import { Children, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import {useCart } from "../context/CartContext";
 
 export default function Sidebar({ searchBox, children }) {
   const navigate = useNavigate();
@@ -8,7 +9,8 @@ export default function Sidebar({ searchBox, children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
-  const [cartCount, setCartCount] = useState(0);
+  const {cartCount} = useCart();
+  // const [cartCount, setCartCount] = useState(0);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 

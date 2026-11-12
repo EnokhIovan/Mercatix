@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Explore.css";
 import Sidebar from "../../components/Sidebar";
 import PageLayout from "../../layouts/PageLayout";
+import {useCart} from "../../context/CartContext";
 
 const products = [
   {
@@ -76,7 +77,8 @@ export default function CustomerDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
-  const [cartCount, setCartCount] = useState(0);
+  // const [cartCount, setCartCount] = useState(0);
+  const {setCartCount} = useCart();
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -107,133 +109,131 @@ export default function CustomerDashboard() {
 
   return (
     <>
-     <PageLayout>
-      {/* Welcome */}
-      <section className="welcome-section">
-        <p>Selamat datang kembali!</p>
+      <PageLayout title="Explore">
+        {/* Welcome */}
+        <section className="welcome-section">
+          <p>Selamat datang kembali!</p>
 
-        <h2>Halo, {user.name || "Customer"} 👋</h2>
+          <h2>Halo, {user.name || "Customer"} 👋</h2>
 
-        <p className="welcome-description">
-          Temukan makanan favoritmu hari ini.
-        </p>
-      </section>
-
-      {/* Hero Banner */}
-      <section className="hero-banner">
-        <div className="hero-content">
-          <span className="hero-badge">SPECIAL OFFER</span>
-
-          <h2>Lapar? Saatnya Temukan Favoritmu!</h2>
-
-          <p>
-            Jelajahi berbagai pilihan makanan menarik dari merchant
-            favoritmu di Mercatix.
+          <p className="welcome-description">
+            Temukan makanan favoritmu hari ini.
           </p>
+        </section>
 
-          <button
-            className="hero-button"
-            onClick={() => {
-              document.getElementById("products")?.scrollIntoView({
-                behavior: "smooth",
-              });
-            }}
-          >
-            Jelajahi Produk
-          </button>
-        </div>
+        {/* Hero Banner */}
+        <section className="hero-banner">
+          <div className="hero-content">
+            <span className="hero-badge">SPECIAL OFFER</span>
 
-        <div className="hero-decoration">🍔</div>
-      </section>
+            <h2>Lapar? Saatnya Temukan Favoritmu!</h2>
 
-      {/* Categories */}
-      <section className="section">
-        <div className="section-heading">
-          <h2>Kategori Makanan</h2>
-        </div>
+            <p>
+              Jelajahi berbagai pilihan makanan menarik dari merchant favoritmu
+              di Mercatix.
+            </p>
 
-        <div className="category-list">
-          {categories.map((category) => (
             <button
-              key={category}
-              className={`category-button ${
-                activeCategory === category ? "active" : ""
-              }`}
-              onClick={() => setActiveCategory(category)}
+              className="hero-button"
+              onClick={() => {
+                document.getElementById("products")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }}
             >
-              {category}
+              Jelajahi Produk
             </button>
-          ))}
-        </div>
-      </section>
-
-      {/* Products */}
-      <section className="section" id="products">
-        <div className="products-heading">
-          <div className="section-heading">
-            <h2>Rekomendasi Untukmu</h2>
-            <p>Pilihan makanan yang mungkin kamu sukai.</p>
           </div>
 
-          <span className="product-count">
-            {filteredProducts.length} Produk
-          </span>
-        </div>
+          <div className="hero-decoration">🍔</div>
+        </section>
 
-        {filteredProducts.length > 0 ? (
-          <div className="product-grid">
-            {filteredProducts.map((product) => (
-              <article className="product-card" key={product.id}>
-                <div className="product-image-wrapper">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="product-image"
-                  />
+        {/* Categories */}
+        <section className="section">
+          <div className="section-heading">
+            <h2>Kategori Makanan</h2>
+          </div>
 
-                  <span className="product-category">
-                    {product.category}
-                  </span>
-                </div>
-
-                <div className="product-info">
-                  <h3 className="product-name">{product.name}</h3>
-
-                  <p className="product-merchant">{product.merchant}</p>
-
-                  <div className="product-details">
-                    <span className="product-price">
-                      {formatPrice(product.price)}
-                    </span>
-
-                    <span className="product-rating">
-                      ⭐ {product.rating}
-                    </span>
-                  </div>
-
-                  <button
-                    className="add-cart-button"
-                    onClick={() => {
-                      setCartCount((count) => count + 1);
-                    }}
-                  >
-                    + Tambah
-                  </button>
-                </div>
-              </article>
+          <div className="category-list">
+            {categories.map((category) => (
+              <button
+                key={category}
+                className={`category-button ${
+                  activeCategory === category ? "active" : ""
+                }`}
+                onClick={() => setActiveCategory(category)}
+              >
+                {category}
+              </button>
             ))}
           </div>
-        ) : (
-          <div className="empty-state">
-            <div className="empty-icon">🔍</div>
+        </section>
 
-            <h3>Produk tidak ditemukan</h3>
+        {/* Products */}
+        <section className="section" id="products">
+          <div className="products-heading">
+            <div className="section-heading">
+              <h2>Rekomendasi Untukmu</h2>
+              <p>Pilihan makanan yang mungkin kamu sukai.</p>
+            </div>
 
-            <p>Coba gunakan kata kunci atau kategori lain.</p>
+            <span className="product-count">
+              {filteredProducts.length} Produk
+            </span>
           </div>
-        )}
-      </section>
-     </PageLayout>
+
+          {filteredProducts.length > 0 ? (
+            <div className="product-grid">
+              {filteredProducts.map((product) => (
+                <article className="product-card" key={product.id}>
+                  <div className="product-image-wrapper">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="product-image"
+                    />
+
+                    <span className="product-category">{product.category}</span>
+                  </div>
+
+                  <div className="product-info">
+                    <h3 className="product-name">{product.name}</h3>
+
+                    <p className="product-merchant">{product.merchant}</p>
+
+                    <div className="product-details">
+                      <span className="product-price">
+                        {formatPrice(product.price)}
+                      </span>
+
+                      <span className="product-rating">
+                        ⭐ {product.rating}
+                      </span>
+                    </div>
+
+                    <button
+                      className="add-cart-button"
+                      onClick={() => {
+                        setCartCount((count) => count + 1);
+                      }}
+                    >
+                      + Tambah
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <div className="empty-icon">🔍</div>
+
+              <h3>Produk tidak ditemukan</h3>
+
+              <p>Coba gunakan kata kunci atau kategori lain.</p>
+            </div>
+          )}
+        </section>
+      </PageLayout>
     </>
   );
 }
