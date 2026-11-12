@@ -1,43 +1,4 @@
 /* ========================================
-   MERCATIX - COLOR SYSTEM
-   (sama dengan Explore.css, diulang agar halaman
-   ini tetap tampil benar jika dibuka lebih dulu)
-======================================== */
-
-:root {
-  --primary-dark: #2e1065;
-  --primary-deep: #4c1d95;
-  --primary: #7c3aed;
-  --primary-hover: #6d28d9;
-  --primary-light: #a78bfa;
-
-  --lavender: #c4b5fd;
-  --lavender-light: #ddd6fe;
-  --lavender-soft: #ede9fe;
-  --lavender-bg: #f5f3ff;
-
-  --background: #fafafc;
-  --surface: #ffffff;
-  --border: #e9e5f5;
-
-  --text-primary: #27233a;
-  --text-secondary: #6b6880;
-  --text-muted: #a09caf;
-
-  --danger: #ef4444;
-  --success: #16a34a;
-
-  --shadow-sm: 0 2px 8px rgba(46, 16, 101, 0.05);
-  --shadow-md: 0 8px 24px rgba(46, 16, 101, 0.1);
-  --shadow-lg: 0 12px 32px rgba(46, 16, 101, 0.15);
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
-}
-
-/* ========================================
    WELCOME
 ======================================== */
 

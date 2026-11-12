@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Children, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
-export default function Sidebar({ children }) {
+export default function Sidebar({ searchBox, children }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -45,16 +46,27 @@ export default function Sidebar({ children }) {
             <div className="user-avatar">👤</div>
 
             <div className="user-info">
-              <strong>{user.name || "Customer"}</strong>
+              <strong>{user.  name || "Customer"}</strong>
               <span>Customer Account</span>
             </div>
           </div>
 
           <nav className="sidebar-nav">
             <p className="sidebar-label">Menu</p>
+            {/* Sidebar List Content */}
 
             <button
-              className="sidebar-link active"
+              className={`sidebar-link ${location.pathname === '/explore' ? "active" : ""}`}
+              onClick={() => {
+                navigate("/explore");
+              }}
+            >
+              <span className="sidebar-icon">▦</span>
+              Explore
+            </button>
+
+            <button
+              className={`sidebar-link ${location.pathname === '/dashboard' ? "active" : ""}`}
               onClick={() => {
                 navigate("/dashboard");
                 setSidebarOpen(false);
@@ -65,20 +77,20 @@ export default function Sidebar({ children }) {
             </button>
 
             <button
-              className="sidebar-link"
-              onClick={() => navigate("/customer/profile")}
+              className={`sidebar-link ${location.pathname === '/profile' ? "active" : ""}`}
+              onClick={() => navigate("/profile")}
             >
               <span className="sidebar-icon">♙</span>
-              Profil Saya
+              Profile
             </button>
 
-            <button
+            {/* <button
               className="sidebar-link"
               onClick={() => navigate("/customer/settings")}
             >
               <span className="sidebar-icon">⚙</span>
               Pengaturan
-            </button>
+            </button> */}
           </nav>
 
           <div className="sidebar-footer">
@@ -105,38 +117,46 @@ export default function Sidebar({ children }) {
                 Mercatix<span>.</span>
               </h1>
 
-              <div className="navbar-search">
-                <span className="search-icon">⌕</span>
+              {/* Search Box */}
+              {searchBox && (
+                <div className="navbar-search">
+                  <span className="search-icon">⌕</span>
+                  
+                  <input
+                    type="text"
+                    placeholder="Cari makanan atau merchant..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>    
+              )}
 
-                <input
-                  type="text"
-                  placeholder="Cari makanan atau merchant..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
+              <div className="d-flex flex flex-row ml-auto gap-4">
+                <button
+                  className="navbar-action"
+                  onClick={() => navigate("/customer/cart")}
+                >
+                  🛒
+                  {cartCount > 0 && (
+                    <span className="cart-badge">{cartCount}</span>
+                  )}
+                </button>
+
+                <button
+                  className="navbar-avatar"
+                  onClick={() => navigate("/customer/profile")}
+                >
+                  👤
+                </button>
               </div>
 
-              <button
-                className="navbar-action"
-                onClick={() => navigate("/customer/cart")}
-              >
-                🛒
-                {cartCount > 0 && (
-                  <span className="cart-badge">{cartCount}</span>
-                )}
-              </button>
-
-              <button
-                className="navbar-avatar"
-                onClick={() => navigate("/customer/profile")}
-              >
-                👤
-              </button>
             </div>
           </header>
 
           {/* Content */}
-          <main className="customer-main">{children}</main>
+          <main className="customer-main">
+            {children}
+          </main>
         </div>
       </div>
     </>
