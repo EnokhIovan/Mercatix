@@ -1,65 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Explore.css";
 import PageLayout from "../../layouts/PageLayout";
-import {useCart} from "../../context/CartContext";
-
-const products = [
-  {
-    id: 1,
-    name: "Chicken Katsu",
-    merchant: "Dapur Mama",
-    category: "Makanan Berat",
-    price: 18000,
-    rating: 4.8,
-    image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600",
-  },
-  {
-    id: 2,
-    name: "Burger Special",
-    merchant: "Burger House",
-    category: "Fast Food",
-    price: 25000,
-    rating: 4.9,
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600",
-  },
-  {
-    id: 3,
-    name: "Japanese Ramen",
-    merchant: "Ramen Corner",
-    category: "Makanan Berat",
-    price: 22000,
-    rating: 4.7,
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600",
-  },
-  {
-    id: 4,
-    name: "Chocolate Cake",
-    merchant: "Sweet Bakery",
-    category: "Dessert",
-    price: 15000,
-    rating: 4.9,
-    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600",
-  },
-  {
-    id: 5,
-    name: "Strawberry Juice",
-    merchant: "Fresh Drink",
-    category: "Minuman",
-    price: 12000,
-    rating: 4.6,
-    image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600",
-  },
-  {
-    id: 6,
-    name: "French Fries",
-    merchant: "Snack Station",
-    category: "Snack",
-    price: 10000,
-    rating: 4.7,
-    image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600",
-  },
-];
+import { useCart } from "../../context/CartContext";
+import { getProducts } from "../../api/productApi";
 
 const categories = [
   "Semua",
@@ -76,34 +20,70 @@ export default function CustomerDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
-  // const [cartCount, setCartCount] = useState(0);
-  const {setCartCount} = useCart();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const { setCartCount } = useCart();
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+  // Fetch Products
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const result = await getProducts();
+
+        setProducts(result.data || []);
+      } catch (error) {
+        console.error("Fetch products error:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, []);
+
+  // Get merchant name
+  const getMerchantName = (merchant) => {
+    if (typeof merchant === "string") {
+      return merchant;
+    }
+
+    return merchant?.store_name || merchant?.name || "Merchant";
+  };
+
+  // Get category name
+  const getCategoryName = (category) => {
+    if (typeof category === "string") {
+      return category;
+    }
+
+    return category?.name || category?.nama_kategori || "Lainnya";
+  };
+
+  // Filter Products
   const filteredProducts = products.filter((product) => {
+    const merchantName = getMerchantName(product.merchant);
+    const categoryName = getCategoryName(product.category);
+
     const matchesSearch =
       product.name.toLowerCase().includes(search.toLowerCase()) ||
-      product.merchant.toLowerCase().includes(search.toLowerCase());
+      merchantName.toLowerCase().includes(search.toLowerCase());
 
     const matchesCategory =
-      activeCategory === "Semua" || product.category === activeCategory;
+      activeCategory === "Semua" || categoryName === activeCategory;
 
     return matchesSearch && matchesCategory;
   });
 
+  // Format Price
   const formatPrice = (price) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
       maximumFractionDigits: 0,
     }).format(price);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    navigate("/login");
   };
 
   return (
@@ -181,7 +161,11 @@ export default function CustomerDashboard() {
             </span>
           </div>
 
-          {filteredProducts.length > 0 ? (
+          {loading ? (
+            <div className="empty-state">
+              <h3>Memuat produk...</h3>
+            </div>
+          ) : filteredProducts.length > 0 ? (
             <div className="product-grid">
               {filteredProducts.map((product) => (
                 <article className="product-card" key={product.id}>
@@ -192,21 +176,21 @@ export default function CustomerDashboard() {
                       className="product-image"
                     />
 
-                    <span className="product-category">{product.category}</span>
+                    <span className="product-category">
+                      {getCategoryName(product.category)}
+                    </span>
                   </div>
 
                   <div className="product-info">
                     <h3 className="product-name">{product.name}</h3>
 
-                    <p className="product-merchant">{product.merchant}</p>
+                    <p className="product-merchant">
+                      {getMerchantName(product.merchant)}
+                    </p>
 
                     <div className="product-details">
                       <span className="product-price">
                         {formatPrice(product.price)}
-                      </span>
-
-                      <span className="product-rating">
-                        ⭐ {product.rating}
                       </span>
                     </div>
 
