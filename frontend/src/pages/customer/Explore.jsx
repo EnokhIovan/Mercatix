@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Explore.css";
 import PageLayout from "../../layouts/PageLayout";
 import { useCart } from "../../context/CartContext";
-import { getProducts } from "../../api/productApi";
+import { getProducts } from "../../api/api";
 
 const categories = [
   "Semua",

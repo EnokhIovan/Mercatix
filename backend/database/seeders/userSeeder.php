@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Wallet;
 
 class userSeeder extends Seeder
 {
@@ -20,13 +21,18 @@ class userSeeder extends Seeder
       ]
     );
 
-    User::updateOrCreate(
+    $customer = User::updateOrCreate(
       ['email' => 'aristoteles@mercatix.id'],
       [
         'name' => 'Aristoteles',
         'role' => 'customer',
         'password' => Hash::make('password')
       ]
+    );
+
+    Wallet::updateOrCreate(
+      ['user_id' => $customer->id],
+      ['balance' => 200000]
     );
   }
 }

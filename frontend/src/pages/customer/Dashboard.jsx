@@ -1,10 +1,8 @@
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./Dashboard.css";
 import Sidebar from "../../components/Sidebar";
-
-/* ========================================
-   DATA (dummy — ganti dengan response API)
-======================================== */
+import { getBalance, topUp, transfer } from "../../api/api";
 
 const initialTransactions = [
   { id: 1, type: "out", title: "Pembelian di Dapur Mama", category: "Pembelian", amount: 36000, date: "2026-11-10T12:24:00" },
@@ -16,8 +14,6 @@ const initialTransactions = [
   { id: 7, type: "in", title: "Top Up via Indomaret", category: "Top Up", amount: 300000, date: "2026-11-01T10:00:00" },
   { id: 8, type: "out", title: "Tarik ke Bank Mandiri", category: "Penarikan", amount: 400000, date: "2026-10-28T14:48:00" },
 ];
-
-const INITIAL_BALANCE = 1250000;
 
 const tabs = [
   { key: "overview", label: "Ringkasan" },
@@ -44,7 +40,11 @@ const actions = {
     submit: "Kirim Sekarang",
     checkBalance: true,
     fields: [
-      { name: "target", label: "Nomor HP atau username penerima", placeholder: "Contoh: 081234567890" },
+      {
+        name: "target",
+        label: "Nomor HP atau username penerima",
+        placeholder: "Contoh: 081234567890",
+      },
     ],
     makeTitle: (v) => `Transfer ke ${v.target}`,
   },
@@ -62,7 +62,12 @@ const actions = {
       {
         name: "method",
         label: "Metode pembayaran",
-        options: ["BCA Virtual Account", "Mandiri Virtual Account", "BRI Virtual Account", "Indomaret"],
+        options: [
+          "BCA Virtual Account",
+          "Mandiri Virtual Account",
+          "BRI Virtual Account",
+          "Indomaret",
+        ],
       },
     ],
     makeTitle: (v) => `Top Up via ${v.method}`,
@@ -78,8 +83,16 @@ const actions = {
     submit: "Tarik Dana",
     checkBalance: true,
     fields: [
-      { name: "bank", label: "Bank tujuan", options: ["Bank BCA", "Bank Mandiri", "Bank BRI", "Bank BNI"] },
-      { name: "account", label: "Nomor rekening", placeholder: "Masukkan nomor rekening" },
+      {
+        name: "bank",
+        label: "Bank tujuan",
+        options: ["Bank BCA", "Bank Mandiri", "Bank BRI", "Bank BNI"],
+      },
+      {
+        name: "account",
+        label: "Nomor rekening",
+        placeholder: "Masukkan nomor rekening",
+      },
     ],
     makeTitle: (v) => `Tarik ke ${v.bank}`,
   },
@@ -94,23 +107,32 @@ const actions = {
     submit: "Bayar Tagihan",
     checkBalance: true,
     fields: [
-      { name: "biller", label: "Jenis tagihan", options: ["Listrik PLN", "Air PDAM", "Internet", "BPJS Kesehatan"] },
-      { name: "customerId", label: "Nomor pelanggan", placeholder: "Masukkan nomor pelanggan" },
+      {
+        name: "biller",
+        label: "Jenis tagihan",
+        options: [
+          "Listrik PLN",
+          "Air PDAM",
+          "Internet",
+          "BPJS Kesehatan",
+        ],
+      },
+      {
+        name: "customerId",
+        label: "Nomor pelanggan",
+        placeholder: "Masukkan nomor pelanggan",
+      },
     ],
     makeTitle: (v) => v.biller,
   },
 };
-
-/* ========================================
-   HELPERS
-======================================== */
 
 const formatPrice = (value) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
-  }).format(value);
+  }).format(Number(value) || 0);
 
 const formatDate = (iso) =>
   new Intl.DateTimeFormat("id-ID", {
@@ -129,42 +151,59 @@ const categoryIcon = {
   Penarikan: "↓",
 };
 
-/* ========================================
-   COMPONENT
-======================================== */
+// Mengambil response data secara konsisten
+const getResponseData = (result) => {
+  return result?.data?.data ?? result?.data ?? result;
+};
+
+// Mengambil saldo dari response
+const getResponseBalance = (result) => {
+  const data = getResponseData(result);
+
+  return Number(data?.balance ?? data?.wallet?.balance ?? 0);
+};
 
 export default function Dashboard() {
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [activeTab, setActiveTab] = useState("overview");
-  const [balance, setBalance] = useState(INITIAL_BALANCE);
+  const [balance, setBalance] = useState(0);
   const [hideBalance, setHideBalance] = useState(false);
-  const [transactions, setTransactions] = useState(initialTransactions);
+  const [transactions] = useState(initialTransactions);
   const [historyFilter, setHistoryFilter] = useState("all");
 
-  // Modal aksi
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
   const [activeAction, setActiveAction] = useState(null);
   const [form, setForm] = useState({});
   const [amount, setAmount] = useState("");
   const [formError, setFormError] = useState("");
-
   const [toast, setToast] = useState("");
 
   const modalRef = useRef(null);
 
-  /* ---------- derived ---------- */
-
+  // Ringkasan transaksi bulan ini
   const summary = useMemo(() => {
     const now = new Date();
+
     return transactions
       .filter((t) => {
-        const d = new Date(t.date);
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        const date = new Date(t.date);
+
+        return (
+          date.getMonth() === now.getMonth() &&
+          date.getFullYear() === now.getFullYear()
+        );
       })
       .reduce(
         (acc, t) => {
-          if (t.type === "in") acc.income += t.amount;
-          else acc.expense += t.amount;
+          if (t.type === "in") {
+            acc.income += t.amount;
+          } else {
+            acc.expense += t.amount;
+          }
+
           return acc;
         },
         { income: 0, expense: 0 }
@@ -182,89 +221,149 @@ export default function Dashboard() {
 
   const config = activeAction ? actions[activeAction] : null;
 
-  /* ---------- effects ---------- */
+  // Fetch saldo
+  const fetchBalance = async () => {
+    try {
+      const result = await getBalance();
+      setBalance(getResponseBalance(result));
+    } catch (error) {
+      console.error("Fetch balance error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Tutup modal dengan Escape + fokus ke input pertama
+  useEffect(() => {
+    fetchBalance();
+  }, []);
+
+  // Modal keyboard handling
   useEffect(() => {
     if (!activeAction) return;
 
-    const onKey = (e) => e.key === "Escape" && closeAction();
+    const onKey = (e) => {
+      if (e.key === "Escape" && !submitting) {
+        closeAction();
+      }
+    };
+
     document.addEventListener("keydown", onKey);
     modalRef.current?.querySelector("input, select")?.focus();
 
     return () => document.removeEventListener("keydown", onKey);
-  }, [activeAction]);
+  }, [activeAction, submitting]);
 
-  // Toast hilang otomatis
+  // Toast timeout
   useEffect(() => {
     if (!toast) return;
+
     const timer = setTimeout(() => setToast(""), 3000);
+
     return () => clearTimeout(timer);
   }, [toast]);
 
-  /* ---------- handlers ---------- */
-
+  // Membuka modal
   const openAction = (key) => {
     const defaults = {};
-    actions[key].fields.forEach((f) => {
-      defaults[f.name] = f.options ? f.options[0] : "";
+
+    actions[key].fields.forEach((field) => {
+      defaults[field.name] = field.options ? field.options[0] : "";
     });
+
     setForm(defaults);
     setAmount("");
     setFormError("");
     setActiveAction(key);
   };
 
+  // Menutup modal
   const closeAction = () => {
+    if (submitting) return;
+
     setActiveAction(null);
     setFormError("");
   };
 
+  // Mengubah nominal
   const handleAmountChange = (e) => {
     setAmount(e.target.value.replace(/\D/g, "").slice(0, 10));
   };
 
-  const handleSubmitAction = (e) => {
+  // Submit transaksi
+  const handleSubmitAction = async (e) => {
     e.preventDefault();
+
+    if (submitting) return;
 
     const value = Number(amount);
 
-    const emptyField = config.fields.find((f) => !String(form[f.name] || "").trim());
+    const emptyField = config.fields.find(
+      (field) => !String(form[field.name] || "").trim()
+    );
+
     if (emptyField) {
       setFormError(`${emptyField.label} wajib diisi.`);
       return;
     }
+
     if (!value || value < 10000) {
       setFormError("Nominal minimal Rp10.000.");
       return;
     }
+
     if (config.checkBalance && value > balance) {
       setFormError(
-        `Saldo tidak cukup. Saldo kamu ${formatPrice(balance)}, kurangi nominal atau top up dulu.`
+        `Saldo tidak cukup. Saldo kamu ${formatPrice(balance)}.`
       );
       return;
     }
 
-    // TODO: ganti dengan request ke API
-    setBalance((b) => (config.type === "in" ? b + value : b - value));
-    setTransactions((list) => [
-      {
-        id: Date.now(),
-        type: config.type,
-        title: config.makeTitle(form),
-        category: config.category,
-        amount: value,
-        date: new Date().toISOString(),
-      },
-      ...list,
-    ]);
+    setSubmitting(true);
+    setFormError("");
 
-    setToast(`${config.title} sebesar ${formatPrice(value)} berhasil.`);
-    closeAction();
+    try {
+      let result;
+
+      if (activeAction === "topup") {
+        result = await topUp(
+          value,
+          `Top Up via ${form.method}`
+        );
+      } else if (activeAction === "transfer") {
+        result = await transfer(
+          form.target,
+          value
+        );
+      } else {
+        setFormError("Fitur ini belum tersedia.");
+        return;
+      }
+
+      const updatedBalance = getResponseBalance(result);
+
+      setBalance(updatedBalance);
+
+      setToast(
+        `${config.title} sebesar ${formatPrice(value)} berhasil.`
+      );
+
+      setActiveAction(null);
+      setFormError("");
+    } catch (error) {
+      console.error("Transaction error:", error);
+
+      setFormError(
+        error.response?.data?.message ||
+        error.response?.data?.errors?.amount?.[0] ||
+        error.response?.data?.errors?.target?.[0] ||
+        "Transaksi gagal. Silakan coba lagi."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  /* ---------- sub render ---------- */
-
+  // Render daftar transaksi
   const renderTransactionList = (list) =>
     list.length > 0 ? (
       <ul className="tx-list">
@@ -298,8 +397,6 @@ export default function Dashboard() {
       </div>
     );
 
-  /* ---------- render ---------- */
-
   return (
     <Sidebar>
       {/* Welcome */}
@@ -326,44 +423,58 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* ================= OVERVIEW ================= */}
+      {/* Overview */}
       {activeTab === "overview" && (
         <>
-          {/* Balance */}
           <section className="balance-card">
             <div className="balance-content">
               <span className="balance-badge">SALDO MERCATIX</span>
 
               <div className="balance-row">
                 <h2 className="balance-amount" aria-live="polite">
-                  {hideBalance ? "Rp ••••••••" : formatPrice(balance)}
+                  {loading
+                    ? "..."
+                    : hideBalance
+                      ? "Rp ••••••••"
+                      : formatPrice(balance)}
                 </h2>
 
                 <button
                   className="balance-toggle"
                   onClick={() => setHideBalance((v) => !v)}
-                  aria-label={hideBalance ? "Tampilkan saldo" : "Sembunyikan saldo"}
+                  aria-label={
+                    hideBalance ? "Tampilkan saldo" : "Sembunyikan saldo"
+                  }
                 >
                   {hideBalance ? "Tampilkan" : "Sembunyikan"}
                 </button>
               </div>
 
               <p>
-                Pemasukan dan pengeluaran bulan ini sudah dihitung dari riwayat
-                transaksimu.
+                Pemasukan dan pengeluaran bulan ini sudah dihitung dari
+                riwayat transaksimu.
               </p>
 
               <div className="balance-buttons">
-                <button className="balance-button primary" onClick={() => openAction("topup")}>
+                <button
+                  className="balance-button primary"
+                  onClick={() => openAction("topup")}
+                >
                   Top Up Saldo
                 </button>
-                <button className="balance-button ghost" onClick={() => openAction("transfer")}>
+
+                <button
+                  className="balance-button ghost"
+                  onClick={() => openAction("transfer")}
+                >
                   Transfer
                 </button>
               </div>
             </div>
 
-            <div className="balance-decoration" aria-hidden="true">💳</div>
+            <div className="balance-decoration" aria-hidden="true">
+              💳
+            </div>
           </section>
 
           {/* Quick actions */}
@@ -374,11 +485,15 @@ export default function Dashboard() {
             </div>
 
             <div className="action-grid">
-              {Object.entries(actions).map(([key, a]) => (
-                <button className="action-card" key={key} onClick={() => openAction(key)}>
-                  <span className="action-icon">{a.icon}</span>
-                  <strong>{a.label}</strong>
-                  <span>{a.hint}</span>
+              {Object.entries(actions).map(([key, action]) => (
+                <button
+                  className="action-card"
+                  key={key}
+                  onClick={() => openAction(key)}
+                >
+                  <span className="action-icon">{action.icon}</span>
+                  <strong>{action.label}</strong>
+                  <span>{action.hint}</span>
                 </button>
               ))}
             </div>
@@ -394,11 +509,16 @@ export default function Dashboard() {
             <div className="stat-grid">
               <div className="stat-card">
                 <span>Uang masuk</span>
-                <strong className="in">{formatPrice(summary.income)}</strong>
+                <strong className="in">
+                  {formatPrice(summary.income)}
+                </strong>
               </div>
+
               <div className="stat-card">
                 <span>Uang keluar</span>
-                <strong className="out">{formatPrice(summary.expense)}</strong>
+                <strong className="out">
+                  {formatPrice(summary.expense)}
+                </strong>
               </div>
             </div>
           </section>
@@ -411,7 +531,10 @@ export default function Dashboard() {
                 <p>5 aktivitas terbaru di akunmu.</p>
               </div>
 
-              <button className="link-button" onClick={() => setActiveTab("history")}>
+              <button
+                className="link-button"
+                onClick={() => setActiveTab("history")}
+              >
                 Lihat semua
               </button>
             </div>
@@ -421,7 +544,7 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* ================= HISTORY ================= */}
+      {/* History */}
       {activeTab === "history" && (
         <section className="dash-section">
           <div className="dash-heading-row">
@@ -430,17 +553,21 @@ export default function Dashboard() {
               <p>Semua aktivitas keuangan di akunmu.</p>
             </div>
 
-            <span className="dash-count">{filteredTransactions.length} Transaksi</span>
+            <span className="dash-count">
+              {filteredTransactions.length} Transaksi
+            </span>
           </div>
 
           <div className="dash-filters">
-            {historyFilters.map((f) => (
+            {historyFilters.map((filter) => (
               <button
-                key={f.key}
-                className={`dash-filter ${historyFilter === f.key ? "active" : ""}`}
-                onClick={() => setHistoryFilter(f.key)}
+                key={filter.key}
+                className={`dash-filter ${
+                  historyFilter === filter.key ? "active" : ""
+                }`}
+                onClick={() => setHistoryFilter(filter.key)}
               >
-                {f.label}
+                {filter.label}
               </button>
             ))}
           </div>
@@ -450,9 +577,11 @@ export default function Dashboard() {
       )}
 
       {/* Footer */}
-      <footer className="dash-footer">© 2026 Mercatix. All rights reserved.</footer>
+      <footer className="dash-footer">
+        © 2026 Mercatix. All rights reserved.
+      </footer>
 
-      {/* ================= MODAL ================= */}
+      {/* Modal */}
       {config && (
         <div className="modal-overlay" onClick={closeAction}>
           <div
@@ -469,31 +598,50 @@ export default function Dashboard() {
                 <p>{config.description}</p>
               </div>
 
-              <button className="modal-close" onClick={closeAction} aria-label="Tutup">
+              <button
+                className="modal-close"
+                onClick={closeAction}
+                disabled={submitting}
+                aria-label="Tutup"
+              >
                 ✕
               </button>
             </div>
 
             <form onSubmit={handleSubmitAction}>
-              {config.fields.map((f) => (
-                <label className="field" key={f.name}>
-                  <span>{f.label}</span>
+              {config.fields.map((field) => (
+                <label className="field" key={field.name}>
+                  <span>{field.label}</span>
 
-                  {f.options ? (
+                  {field.options ? (
                     <select
-                      value={form[f.name]}
-                      onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
+                      value={form[field.name]}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          [field.name]: e.target.value,
+                        })
+                      }
+                      disabled={submitting}
                     >
-                      {f.options.map((opt) => (
-                        <option key={opt}>{opt}</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
                       ))}
                     </select>
                   ) : (
                     <input
                       type="text"
-                      placeholder={f.placeholder}
-                      value={form[f.name]}
-                      onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
+                      placeholder={field.placeholder}
+                      value={form[field.name]}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          [field.name]: e.target.value,
+                        })
+                      }
+                      disabled={submitting}
                     />
                   )}
                 </label>
@@ -501,34 +649,56 @@ export default function Dashboard() {
 
               <label className="field">
                 <span>Nominal</span>
+
                 <div className="amount-input">
                   <em>Rp</em>
+
                   <input
                     type="text"
                     inputMode="numeric"
                     placeholder="0"
-                    value={amount ? Number(amount).toLocaleString("id-ID") : ""}
+                    value={
+                      amount
+                        ? Number(amount).toLocaleString("id-ID")
+                        : ""
+                    }
                     onChange={handleAmountChange}
+                    disabled={submitting}
                   />
                 </div>
               </label>
 
               <div className="quick-amounts">
-                {quickAmounts.map((q) => (
-                  <button type="button" key={q} onClick={() => setAmount(String(q))}>
-                    {q / 1000}rb
+                {quickAmounts.map((quick) => (
+                  <button
+                    type="button"
+                    key={quick}
+                    onClick={() => setAmount(String(quick))}
+                    disabled={submitting}
+                  >
+                    {quick / 1000}rb
                   </button>
                 ))}
               </div>
 
               {config.checkBalance && (
-                <p className="modal-balance">Saldo tersedia: {formatPrice(balance)}</p>
+                <p className="modal-balance">
+                  Saldo tersedia: {formatPrice(balance)}
+                </p>
               )}
 
-              {formError && <p className="form-error" role="alert">{formError}</p>}
+              {formError && (
+                <p className="form-error" role="alert">
+                  {formError}
+                </p>
+              )}
 
-              <button type="submit" className="btn-primary btn-block">
-                {config.submit}
+              <button
+                type="submit"
+                className="btn-primary btn-block"
+                disabled={submitting || loading}
+              >
+                {submitting ? "Memproses..." : config.submit}
               </button>
             </form>
           </div>
