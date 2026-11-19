@@ -15,17 +15,17 @@ class MerchantSeeder extends Seeder
       [
         'name' => 'Plato',
         'email' => 'plato@mercatix.merchant.id',
-        'store_name' => 'Dapur Mama',
+        'store_name' => 'Dapur Gerika',
       ],
       [
         'name' => 'Pythagoras',
         'email' => 'pythagoras@mercatix.merchant.id',
-        'store_name' => 'Burger House',
+        'store_name' => 'Hypotenuse House',
       ],
       [
         'name' => 'Herakleitos',
         'email' => 'herakleitos@mercatix.merchant.id',
-        'store_name' => 'Sweet Bakery',
+        'store_name' => 'Sweet Motivation',
       ],
     ];
 

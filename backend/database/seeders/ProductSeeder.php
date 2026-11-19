@@ -13,7 +13,7 @@ class ProductSeeder extends Seeder
     $products = [
       [
         'id' => 1,
-        'merchant' => 'Dapur Mama',
+        'merchant' => 'Dapur Gerika',
         'name' => 'Chicken Katsu',
         'category' => 'Makanan Berat',
         'price' => 18000,
@@ -21,7 +21,7 @@ class ProductSeeder extends Seeder
       ],
       [
         'id' => 2,
-        'merchant' => 'Burger House',
+        'merchant' => 'Hypotenuse House',
         'name' => 'Burger Special',
         'category' => 'Fast Food',
         'price' => 25000,
@@ -29,7 +29,7 @@ class ProductSeeder extends Seeder
       ],
       [
         'id' => 3,
-        'merchant' => 'Dapur Mama',
+        'merchant' => 'Dapur Gerika',
         'name' => 'Japanese Ramen',
         'category' => 'Makanan Berat',
         'price' => 22000,
@@ -37,7 +37,7 @@ class ProductSeeder extends Seeder
       ],
       [
         'id' => 4,
-        'merchant' => 'Sweet Bakery',
+        'merchant' => 'Sweet Motivation',
         'name' => 'Chocolate Cake',
         'category' => 'Dessert',
         'price' => 15000,
@@ -45,7 +45,7 @@ class ProductSeeder extends Seeder
       ],
       [
         'id' => 5,
-        'merchant' => 'Sweet Bakery',
+        'merchant' => 'Sweet Motivation',
         'name' => 'Strawberry Juice',
         'category' => 'Minuman',
         'price' => 12000,
@@ -53,7 +53,7 @@ class ProductSeeder extends Seeder
       ],
       [
         'id' => 6,
-        'merchant' => 'Burger House',
+        'merchant' => 'Hypotenuse House',
         'name' => 'French Fries',
         'category' => 'Snack',
         'price' => 10000,
