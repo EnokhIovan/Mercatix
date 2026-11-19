@@ -1,6 +1,7 @@
 import { Children, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {useCart } from "../context/CartContext";
+import CartBox from "../components/CartBox";
 
 export default function Sidebar({ searchBox, children }) {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function Sidebar({ searchBox, children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
-  const {cartCount} = useCart();
+  const {cartCount, setIsCartOpen} = useCart();
   // const [cartCount, setCartCount] = useState(0);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -22,6 +23,7 @@ export default function Sidebar({ searchBox, children }) {
 
   return (
     <>
+      <CartBox></CartBox>
       <div className="customer-dashboard">
         {/* Sidebar Overlay */}
         <div
@@ -37,7 +39,7 @@ export default function Sidebar({ searchBox, children }) {
             </h1>
 
             <button
-              className="sidebar-close"
+              className="button-icon"
               onClick={() => setSidebarOpen(false)}
             >
               ✕
@@ -109,7 +111,7 @@ export default function Sidebar({ searchBox, children }) {
           <header className="customer-navbar">
             <div className="navbar-content">
               <button
-                className="menu-toggle"
+                className="button-icon"
                 onClick={() => setSidebarOpen(true)}
               >
                 ☰
@@ -136,7 +138,7 @@ export default function Sidebar({ searchBox, children }) {
               <div className="d-flex flex flex-row ml-auto gap-4">
                 <button
                   className="navbar-action"
-                  onClick={() => navigate("/customer/cart")}
+                  onClick={() => setIsCartOpen("true")}
                 >
                   🛒
                   {cartCount > 0 && (

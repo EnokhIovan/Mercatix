@@ -43,3 +43,16 @@
   --radius-lg: 18px;
   --radius-xl: 24px;
 }
+
+.button-icon {
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.button-icon:hover {
+  background: var(--lavender-bg);
+}

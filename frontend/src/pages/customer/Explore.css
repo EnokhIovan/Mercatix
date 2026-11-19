@@ -17,10 +17,6 @@
   font: inherit;
 }
 
-.customer-dashboard button {
-  cursor: pointer;
-}
-
 /* ========================================
    SIDEBAR
 ======================================== */
@@ -78,7 +74,7 @@
   color: var(--primary-dark);
 }
 
-.sidebar-close {
+/* .sidebar-close {
   padding: 8px 12px;
   border: none;
   border-radius: var(--radius-sm);
@@ -88,7 +84,7 @@
 
 .sidebar-close:hover {
   background: var(--lavender-bg);
-}
+} */
 
 .sidebar-user {
   display: flex;
@@ -208,14 +204,14 @@
   padding: 0 32px;
 }
 
-.menu-toggle {
+/* .menu-toggle {
   padding: 9px 12px;
   border: none;
   border-radius: var(--radius-md);
   background: transparent;
   color: var(--text-primary);
   font-size: 23px;
-}
+} */
 
 .menu-toggle:hover {
   background: var(--lavender-bg);

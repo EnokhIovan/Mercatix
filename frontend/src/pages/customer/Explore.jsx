@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Explore.css";
-import Sidebar from "../../components/Sidebar";
 import PageLayout from "../../layouts/PageLayout";
 import {useCart} from "../../context/CartContext";
 
