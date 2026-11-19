@@ -14,22 +14,22 @@ class User extends Authenticatable
   use HasFactory, Notifiable;
 
   protected $fillable = [
-      'name',
-      'email',
-      'password',
+    'name',
+    'email',
+    'password',
   ];
 
   protected $hidden = [
-      'password',
-      'remember_token',
+    'password',
+    'remember_token',
   ];
   
   protected function casts(): array
   {
-      return [
-          'email_verified_at' => 'datetime',
-          'password' => 'hashed',
-      ];
+    return [
+      'email_verified_at' => 'datetime',
+      'password' => 'hashed',
+    ];
   }
   
   public function wallet(): HasOne
@@ -37,8 +37,8 @@ class User extends Authenticatable
     return $this->hasOne(Wallet::class);
   }
 
-  public function products(): HasMany
+  public function cartItems(): HasMany
   {
-    return $this->hasMany(Product::class, 'merchant_id');
+    return $this->hasMany(CartItem::class);
   }
 }
