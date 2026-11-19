@@ -2,31 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\Merchant;
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
   public function run(): void
   {
-    $merchants = [
-      'Dapur Mama',
-      'Burger House',
-      'Sweet Bakery',
-    ];
-
-    foreach ($merchants as $name) {
-      User::firstOrCreate(
-        ['email' => strtolower(str_replace(' ', '', $name)) . '@example.com'],
-        [
-          'name' => $name,
-          'password' => bcrypt('password'),
-          'role' => 'merchant',
-        ]
-      );
-    }
-
     $products = [
       [
         'id' => 1,
@@ -78,20 +61,19 @@ class ProductSeeder extends Seeder
       ],
     ];
 
-    foreach ($products as $product) {
-      $merchant = User::where('name', $product['merchant'])
-        ->where('role', 'merchant')
+    foreach ($products as $data) {
+      $merchant = Merchant::where('store_name', $data['merchant'])
         ->firstOrFail();
 
       Product::updateOrCreate(
-        ['id' => $product['id']],
+        ['id' => $data['id']],
         [
           'merchant_id' => $merchant->id,
-          'name' => $product['name'],
-          'category' => $product['category'],
-          'price' => $product['price'],
+          'name' => $data['name'],
+          'category' => $data['category'],
+          'price' => $data['price'],
           'stock' => 20,
-          'image' => $product['image'],
+          'image' => $data['image'],
           'is_available' => true,
         ]
       );

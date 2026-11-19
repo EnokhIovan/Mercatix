@@ -29,6 +29,6 @@ class Product extends Model
 
   public function merchant(): BelongsTo
   {
-    return $this->belongsTo(User::class, 'merchant_id');
+    return $this->belongsTo(Merchant::class);
   }
 }

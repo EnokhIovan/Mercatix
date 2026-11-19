@@ -28,32 +28,5 @@ class userSeeder extends Seeder
         'password' => Hash::make('password')
       ]
     );
-
-    User::updateOrCreate(
-      ['email' => 'plato@mercatix.merchant.id'],
-      [
-        'name' => 'Plato',
-        'role' => 'merchant',
-        'password' => Hash::make('password')
-      ]
-    );
-
-    User::updateOrCreate(
-      ['email' => 'pythagoras@mercatix.merchant.id'],
-      [
-        'name' => 'Pythagoras',
-        'role' => 'merchant',
-        'password' => Hash::make('password')
-      ]
-    );
-
-    User::updateOrCreate(
-      ['email' => 'herakleitos@mercatix.merchant.id'],
-      [
-        'name' => 'Herakleitos',
-        'role' => 'merchant',
-        'password' => Hash::make('password')
-      ]
-    );
   }
 }
