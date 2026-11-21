@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Explore.css";
 import PageLayout from "../../layouts/PageLayout";
 import { useCart } from "../../context/CartContext";
 import { getProducts } from "../../api/api";
@@ -15,9 +13,6 @@ const categories = [
 ];
 
 export default function CustomerDashboard() {
-  const navigate = useNavigate();
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [products, setProducts] = useState([]);
@@ -32,7 +27,6 @@ export default function CustomerDashboard() {
     async function fetchProducts() {
       try {
         const result = await getProducts();
-
         setProducts(result.data || []);
       } catch (error) {
         console.error("Fetch products error:", error);
@@ -87,60 +81,76 @@ export default function CustomerDashboard() {
   };
 
   return (
-    <>
-      <PageLayout title="Explore">
+    <PageLayout title="Explore">
+      <main className="mx-auto max-w-[1280px] p-4 sm:p-6 lg:p-8">
         {/* Welcome */}
-        <section className="welcome-section">
-          <p>Selamat datang kembali!</p>
+        <section className="mb-7">
+          <p className="text-sm text-gray-500">Selamat datang kembali!</p>
 
-          <h2>Halo, {user.name || "Customer"} 👋</h2>
+          <h2 className="my-2 text-2xl font-extrabold tracking-tight text-gray-900 sm:text-[28px]">
+            Halo, {user.name || "Customer"} 👋
+          </h2>
 
-          <p className="welcome-description">
+          <p className="text-sm text-gray-400">
             Temukan makanan favoritmu hari ini.
           </p>
         </section>
 
         {/* Hero Banner */}
-        <section className="hero-banner">
-          <div className="hero-content">
-            <span className="hero-badge">SPECIAL OFFER</span>
+        <section className="relative mb-10 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-900 via-purple-800 to-violet-600 px-6 py-8 text-white sm:px-12 sm:py-12">
+          <div className="relative z-10 max-w-[520px]">
+            <span className="inline-block rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[11px] font-bold tracking-wider">
+              SPECIAL OFFER
+            </span>
 
-            <h2>Lapar? Saatnya Temukan Favoritmu!</h2>
+            <h2 className="mt-5 text-3xl font-extrabold leading-tight sm:text-4xl">
+              Lapar? Saatnya Temukan Favoritmu!
+            </h2>
 
-            <p>
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-purple-100">
               Jelajahi berbagai pilihan makanan menarik dari merchant favoritmu
               di Mercatix.
             </p>
 
             <button
-              className="hero-button"
               onClick={() => {
                 document.getElementById("products")?.scrollIntoView({
                   behavior: "smooth",
                 });
               }}
+              className="mt-6 rounded-lg bg-white px-6 py-3 text-sm font-bold text-purple-900 transition hover:-translate-y-0.5 hover:bg-purple-50"
             >
               Jelajahi Produk
             </button>
           </div>
 
-          <div className="hero-decoration">🍔</div>
+          <div className="pointer-events-none absolute right-[8%] top-1/2 hidden -translate-y-1/2 text-[180px] opacity-[0.18] sm:block">
+            🍔
+          </div>
+
+          <div className="pointer-events-none absolute -bottom-5 -right-4 text-[100px] opacity-[0.18] sm:hidden">
+            🍔
+          </div>
         </section>
 
         {/* Categories */}
-        <section className="section">
-          <div className="section-heading">
-            <h2>Kategori Makanan</h2>
+        <section className="mb-10">
+          <div className="mb-5">
+            <h2 className="text-xl font-extrabold text-gray-900">
+              Kategori Makanan
+            </h2>
           </div>
 
-          <div className="category-list">
+          <div className="flex gap-3 overflow-x-auto pb-2">
             {categories.map((category) => (
               <button
                 key={category}
-                className={`category-button ${
-                  activeCategory === category ? "active" : ""
-                }`}
                 onClick={() => setActiveCategory(category)}
+                className={`shrink-0 rounded-lg border px-5 py-3 text-[13px] font-semibold transition ${
+                  activeCategory === category
+                    ? "border-violet-600 bg-violet-600 text-white shadow-sm"
+                    : "border-gray-200 bg-white text-gray-600 hover:border-violet-400 hover:text-violet-600"
+                }`}
               >
                 {category}
               </button>
@@ -149,56 +159,73 @@ export default function CustomerDashboard() {
         </section>
 
         {/* Products */}
-        <section className="section" id="products">
-          <div className="products-heading">
-            <div className="section-heading">
-              <h2>Rekomendasi Untukmu</h2>
-              <p>Pilihan makanan yang mungkin kamu sukai.</p>
+        <section id="products" className="mb-10 scroll-mt-24">
+          <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <h2 className="text-xl font-extrabold text-gray-900">
+                Rekomendasi Untukmu
+              </h2>
+
+              <p className="mt-1.5 text-[13px] text-gray-500">
+                Pilihan makanan yang mungkin kamu sukai.
+              </p>
             </div>
 
-            <span className="product-count">
+            <span className="text-[13px] font-bold text-violet-600">
               {filteredProducts.length} Produk
             </span>
           </div>
 
+          {/* Loading */}
           {loading ? (
-            <div className="empty-state">
-              <h3>Memuat produk...</h3>
+            <div className="rounded-xl border border-gray-200 bg-white px-5 py-16 text-center">
+              <h3 className="font-semibold text-gray-600">Memuat produk...</h3>
             </div>
           ) : filteredProducts.length > 0 ? (
-            <div className="product-grid">
+            /* Product Grid */
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
               {filteredProducts.map((product) => (
-                <article className="product-card" key={product.id}>
-                  <div className="product-image-wrapper">
+                <article
+                  key={product.id}
+                  className="overflow-hidden rounded-xl border border-gray-200 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+                >
+                  {/* Product Image */}
+                  <div className="relative aspect-[4/3] overflow-hidden bg-purple-50">
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="product-image"
+                      className="h-full w-full object-cover transition duration-300 hover:scale-105"
                     />
 
-                    <span className="product-category">
+                    <span className="absolute left-3 top-3 rounded-lg bg-white/95 px-2.5 py-1.5 text-[10px] font-bold text-purple-900">
                       {getCategoryName(product.category)}
                     </span>
                   </div>
 
-                  <div className="product-info">
-                    <h3 className="product-name">{product.name}</h3>
+                  {/* Product Info */}
+                  <div className="p-3 sm:p-4">
+                    <h3
+                      className="overflow-hidden text-ellipsis whitespace-nowrap text-xs font-bold text-gray-900 sm:text-sm"
+                      title={product.name}
+                    >
+                      {product.name}
+                    </h3>
 
-                    <p className="product-merchant">
+                    <p className="mb-3 mt-1.5 text-xs text-gray-400">
                       {getMerchantName(product.merchant)}
                     </p>
 
-                    <div className="product-details">
-                      <span className="product-price">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-extrabold text-violet-600 sm:text-sm">
                         {formatPrice(product.price)}
                       </span>
                     </div>
 
                     <button
-                      className="add-cart-button"
                       onClick={() => {
                         setCartCount((count) => count + 1);
                       }}
+                      className="mt-4 w-full rounded-lg bg-purple-50 px-3 py-2.5 text-xs font-bold text-violet-700 transition hover:bg-violet-600 hover:text-white"
                     >
                       + Tambah
                     </button>
@@ -207,16 +234,21 @@ export default function CustomerDashboard() {
               ))}
             </div>
           ) : (
-            <div className="empty-state">
-              <div className="empty-icon">🔍</div>
+            /* Empty State */
+            <div className="rounded-xl border border-dashed border-gray-300 bg-white px-5 py-16 text-center">
+              <div className="text-4xl">🔍</div>
 
-              <h3>Produk tidak ditemukan</h3>
+              <h3 className="mb-2 mt-4 font-bold text-gray-800">
+                Produk tidak ditemukan
+              </h3>
 
-              <p>Coba gunakan kata kunci atau kategori lain.</p>
+              <p className="text-[13px] text-gray-500">
+                Coba gunakan kata kunci atau kategori lain.
+              </p>
             </div>
           )}
         </section>
-      </PageLayout>
-    </>
+      </main>
+    </PageLayout>
   );
 }
