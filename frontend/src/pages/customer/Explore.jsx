@@ -38,7 +38,7 @@ export default function CustomerDashboard() {
     fetchProducts();
   }, []);
 
-  // Get merchant name
+  // Get Merchant Name
   const getMerchantName = (merchant) => {
     if (typeof merchant === "string") {
       return merchant;
@@ -47,7 +47,7 @@ export default function CustomerDashboard() {
     return merchant?.store_name || merchant?.name || "Merchant";
   };
 
-  // Get category name
+  // Get Category Name
   const getCategoryName = (category) => {
     if (typeof category === "string") {
       return category;
@@ -80,175 +80,190 @@ export default function CustomerDashboard() {
     }).format(price);
   };
 
+  // Add to Cart
+  const handleAddToCart = () => {
+    setCartCount((count) => count + 1);
+  };
+
   return (
     <PageLayout title="Explore">
-      <main className="mx-auto max-w-[1280px] p-4 sm:p-6 lg:p-8">
-        {/* Welcome */}
-        <section className="mb-7">
-          <p className="text-sm text-gray-500">Selamat datang kembali!</p>
+      {/* Welcome */}
+      <section className="mb-7">
+        <p className="text-sm text-[var(--text-secondary)]">
+          Selamat datang kembali!
+        </p>
 
-          <h2 className="my-2 text-2xl font-extrabold tracking-tight text-gray-900 sm:text-[28px]">
-            Halo, {user.name || "Customer"} 👋
+        <h2 className="my-2 text-2xl font-extrabold tracking-tight text-[var(--text-primary)] sm:text-[28px]">
+          Halo, {user.name || "Customer"} 👋
+        </h2>
+
+        <p className="text-sm text-[var(--text-muted)]">
+          Temukan makanan favoritmu hari ini.
+        </p>
+      </section>
+
+      {/* Hero Banner */}
+      <section className="relative mb-10 overflow-hidden rounded-[var(--radius-xl)] bg-gradient-to-br from-[var(--primary-dark)] via-[var(--primary-deep)] to-[var(--primary)] px-6 py-8 text-white sm:px-12 sm:py-12">
+        <div className="relative z-10 max-w-[520px]">
+          <span className="inline-block rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[11px] font-bold tracking-wider">
+            SPECIAL OFFER
+          </span>
+
+          <h2 className="mt-5 text-3xl font-extrabold leading-tight sm:text-4xl">
+            Lapar? Saatnya Temukan Favoritmu!
           </h2>
 
-          <p className="text-sm text-gray-400">
-            Temukan makanan favoritmu hari ini.
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--lavender-light)]">
+            Jelajahi berbagai pilihan makanan menarik dari merchant favoritmu di
+            Mercatix.
           </p>
-        </section>
 
-        {/* Hero Banner */}
-        <section className="relative mb-10 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-900 via-purple-800 to-violet-600 px-6 py-8 text-white sm:px-12 sm:py-12">
-          <div className="relative z-10 max-w-[520px]">
-            <span className="inline-block rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[11px] font-bold tracking-wider">
-              SPECIAL OFFER
-            </span>
+          <button
+            onClick={() => {
+              document.getElementById("products")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
+            className="mt-6 rounded-lg bg-[var(--surface)] px-6 py-3 text-sm font-bold text-[var(--primary-dark)] transition hover:-translate-y-0.5 hover:bg-[var(--lavender-bg)]"
+          >
+            Jelajahi Produk
+          </button>
+        </div>
 
-            <h2 className="mt-5 text-3xl font-extrabold leading-tight sm:text-4xl">
-              Lapar? Saatnya Temukan Favoritmu!
-            </h2>
+        <div className="pointer-events-none absolute right-[8%] top-1/2 hidden -translate-y-1/2 text-[180px] opacity-[0.18] sm:block">
+          🍔
+        </div>
 
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-purple-100">
-              Jelajahi berbagai pilihan makanan menarik dari merchant favoritmu
-              di Mercatix.
-            </p>
+        <div className="pointer-events-none absolute -bottom-5 -right-4 text-[100px] opacity-[0.18] sm:hidden">
+          🍔
+        </div>
+      </section>
 
+      {/* Categories */}
+      <section className="mb-10">
+        <div className="mb-5">
+          <h2 className="text-xl font-extrabold text-[var(--text-primary)]">
+            Kategori Makanan
+          </h2>
+        </div>
+
+        <div className="flex gap-3 overflow-x-auto pb-2">
+          {categories.map((category) => (
             <button
-              onClick={() => {
-                document.getElementById("products")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
-              className="mt-6 rounded-lg bg-white px-6 py-3 text-sm font-bold text-purple-900 transition hover:-translate-y-0.5 hover:bg-purple-50"
+              key={category}
+              onClick={() => setActiveCategory(category)}
+              className={`shrink-0 rounded-lg border px-5 py-3 text-[13px] font-semibold transition ${
+                activeCategory === category
+                  ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[var(--shadow-sm)]"
+                  : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-secondary)] hover:border-[var(--primary-light)] hover:text-[var(--primary)]"
+              }`}
             >
-              Jelajahi Produk
+              {category}
             </button>
-          </div>
+          ))}
+        </div>
+      </section>
 
-          <div className="pointer-events-none absolute right-[8%] top-1/2 hidden -translate-y-1/2 text-[180px] opacity-[0.18] sm:block">
-            🍔
-          </div>
-
-          <div className="pointer-events-none absolute -bottom-5 -right-4 text-[100px] opacity-[0.18] sm:hidden">
-            🍔
-          </div>
-        </section>
-
-        {/* Categories */}
-        <section className="mb-10">
-          <div className="mb-5">
-            <h2 className="text-xl font-extrabold text-gray-900">
-              Kategori Makanan
+      {/* Products */}
+      <section id="products" className="mb-10 scroll-mt-24">
+        <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <div>
+            <h2 className="text-xl font-extrabold text-[var(--text-primary)]">
+              Rekomendasi Untukmu
             </h2>
+
+            <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">
+              Pilihan makanan yang mungkin kamu sukai.
+            </p>
           </div>
 
-          <div className="flex gap-3 overflow-x-auto pb-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`shrink-0 rounded-lg border px-5 py-3 text-[13px] font-semibold transition ${
-                  activeCategory === category
-                    ? "border-violet-600 bg-violet-600 text-white shadow-sm"
-                    : "border-gray-200 bg-white text-gray-600 hover:border-violet-400 hover:text-violet-600"
-                }`}
+          <span className="text-[13px] font-bold text-[var(--primary)]">
+            {filteredProducts.length} Produk
+          </span>
+        </div>
+
+        {/* Loading */}
+        {loading ? (
+          <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-5 py-16 text-center">
+            <h3 className="font-semibold text-[var(--text-secondary)]">
+              Memuat produk...
+            </h3>
+          </div>
+        ) : filteredProducts.length > 0 ? (
+          /* Product Grid */
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+            {filteredProducts.map((product) => (
+              <article
+                key={product.id}
+                className="overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-md)]"
               >
-                {category}
-              </button>
-            ))}
-          </div>
-        </section>
+                {/* Product Image */}
+                <div className="relative aspect-[4/3] overflow-hidden bg-[var(--lavender-bg)]">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="h-full w-full object-cover transition duration-300 hover:scale-105"
+                  />
 
-        {/* Products */}
-        <section id="products" className="mb-10 scroll-mt-24">
-          <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-            <div>
-              <h2 className="text-xl font-extrabold text-gray-900">
-                Rekomendasi Untukmu
-              </h2>
+                  <span className="absolute left-3 top-3 rounded-lg bg-[var(--surface)]/95 px-2.5 py-1.5 text-[10px] font-bold text-[var(--primary-dark)]">
+                    {getCategoryName(product.category)}
+                  </span>
+                </div>
 
-              <p className="mt-1.5 text-[13px] text-gray-500">
-                Pilihan makanan yang mungkin kamu sukai.
-              </p>
-            </div>
+                {/* Product Info */}
+                <div className="p-3 sm:p-4">
+                  <h3
+                    className="overflow-hidden text-ellipsis whitespace-nowrap text-xs font-bold text-[var(--text-primary)] sm:text-sm"
+                    title={product.name}
+                  >
+                    {product.name}
+                  </h3>
 
-            <span className="text-[13px] font-bold text-violet-600">
-              {filteredProducts.length} Produk
-            </span>
-          </div>
+                  <p className="mb-3 mt-1.5 text-xs text-[var(--text-muted)]">
+                    {getMerchantName(product.merchant)}
+                  </p>
 
-          {/* Loading */}
-          {loading ? (
-            <div className="rounded-xl border border-gray-200 bg-white px-5 py-16 text-center">
-              <h3 className="font-semibold text-gray-600">Memuat produk...</h3>
-            </div>
-          ) : filteredProducts.length > 0 ? (
-            /* Product Grid */
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
-              {filteredProducts.map((product) => (
-                <article
-                  key={product.id}
-                  className="overflow-hidden rounded-xl border border-gray-200 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-lg"
-                >
-                  {/* Product Image */}
-                  <div className="relative aspect-[4/3] overflow-hidden bg-purple-50">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="h-full w-full object-cover transition duration-300 hover:scale-105"
-                    />
-
-                    <span className="absolute left-3 top-3 rounded-lg bg-white/95 px-2.5 py-1.5 text-[10px] font-bold text-purple-900">
-                      {getCategoryName(product.category)}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-extrabold text-[var(--primary)] sm:text-sm">
+                      {formatPrice(product.price)}
                     </span>
                   </div>
 
-                  {/* Product Info */}
-                  <div className="p-3 sm:p-4">
-                    <h3
-                      className="overflow-hidden text-ellipsis whitespace-nowrap text-xs font-bold text-gray-900 sm:text-sm"
-                      title={product.name}
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleAddToCart}
+                      className="mt-4 flex-1 rounded-lg bg-[var(--primary)] px-3 py-2.5 text-xs font-bold text-white transition hover:bg-[var(--primary-hover)]"
                     >
-                      {product.name}
-                    </h3>
-
-                    <p className="mb-3 mt-1.5 text-xs text-gray-400">
-                      {getMerchantName(product.merchant)}
-                    </p>
-
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-extrabold text-violet-600 sm:text-sm">
-                        {formatPrice(product.price)}
-                      </span>
-                    </div>
+                      Beli
+                    </button>
 
                     <button
-                      onClick={() => {
-                        setCartCount((count) => count + 1);
-                      }}
-                      className="mt-4 w-full rounded-lg bg-purple-50 px-3 py-2.5 text-xs font-bold text-violet-700 transition hover:bg-violet-600 hover:text-white"
+                      onClick={handleAddToCart}
+                      className="mt-4 w-10 shrink-0 rounded-lg bg-[var(--lavender-bg)] py-2.5 text-xs font-bold text-[var(--primary-deep)] transition hover:bg-[var(--primary)] hover:text-white"
                     >
-                      + Tambah
+                      🛒
                     </button>
                   </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            /* Empty State */
-            <div className="rounded-xl border border-dashed border-gray-300 bg-white px-5 py-16 text-center">
-              <div className="text-4xl">🔍</div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          /* Empty State */
+          <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--border)] bg-[var(--surface)] px-5 py-16 text-center">
+            <div className="text-4xl">🔍</div>
 
-              <h3 className="mb-2 mt-4 font-bold text-gray-800">
-                Produk tidak ditemukan
-              </h3>
+            <h3 className="mb-2 mt-4 font-bold text-[var(--text-primary)]">
+              Produk tidak ditemukan
+            </h3>
 
-              <p className="text-[13px] text-gray-500">
-                Coba gunakan kata kunci atau kategori lain.
-              </p>
-            </div>
-          )}
-        </section>
-      </main>
+            <p className="text-[13px] text-[var(--text-secondary)]">
+              Coba gunakan kata kunci atau kategori lain.
+            </p>
+          </div>
+        )}
+      </section>
     </PageLayout>
   );
 }

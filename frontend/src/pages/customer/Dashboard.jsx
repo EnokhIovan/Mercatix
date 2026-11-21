@@ -1,6 +1,5 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import "./Dashboard.css";
 import Sidebar from "../../components/Sidebar";
 import { getBalance, topUp, transfer } from "../../api/api";
 
@@ -366,56 +365,56 @@ export default function Dashboard() {
   // Render daftar transaksi
   const renderTransactionList = (list) =>
     list.length > 0 ? (
-      <ul className="tx-list">
+      <ul className="m-0 list-none overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-0">
         {list.map((t) => (
-          <li className="tx-item" key={t.id}>
-            <span className={`tx-icon ${t.type}`}>
+          <li className="flex items-center gap-4 border-b border-[var(--border)] px-5 py-4 transition-colors last:border-b-0 hover:bg-[var(--lavender-bg)] max-sm:gap-3 max-sm:px-4 max-sm:py-3.5" key={t.id}>
+            <span className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[var(--radius-md)] text-lg font-bold ${t.type === "in" ? "bg-[#dcfce7] text-[var(--success)]" : "bg-[var(--lavender-soft)] text-[var(--primary)]"}`}>
               {categoryIcon[t.category] || "•"}
             </span>
 
-            <div className="tx-info">
-              <strong>{t.title}</strong>
-              <span>
+            <div className="min-w-0 flex-1">
+              <strong className="block overflow-hidden text-sm text-ellipsis whitespace-nowrap max-sm:text-[13px]">{t.title}</strong>
+              <span className="text-xs text-[var(--text-muted)]">
                 {t.category} • {formatDate(t.date)}
               </span>
             </div>
 
-            <div className="tx-amount">
-              <strong className={t.type}>
+            <div className="text-right">
+              <strong className={`block text-sm font-extrabold max-sm:text-[13px] ${t.type === "in" ? "text-[var(--success)]" : "text-[var(--text-primary)]"}`}>
                 {t.type === "in" ? "+" : "−"} {formatPrice(t.amount)}
               </strong>
-              <span>Berhasil</span>
+              <span className="text-[11px] text-[var(--text-muted)]">Berhasil</span>
             </div>
           </li>
         ))}
       </ul>
     ) : (
-      <div className="dash-empty">
-        <div className="dash-empty-icon">🧾</div>
-        <h3>Belum ada transaksi</h3>
-        <p>Transaksi yang kamu lakukan akan muncul di sini.</p>
+      <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--border)] bg-[var(--surface)] px-5 py-[60px] text-center">
+        <div className="text-[40px]">🧾</div>
+        <h3 className="mb-1.5 mt-3.5 text-base font-bold">Belum ada transaksi</h3>
+        <p className="m-0 text-[13px] text-[var(--text-secondary)]">Transaksi yang kamu lakukan akan muncul di sini.</p>
       </div>
     );
 
   return (
     <Sidebar>
       {/* Welcome */}
-      <section className="dash-welcome">
-        <p>Selamat datang kembali!</p>
-        <h2>Halo, {storedUser.name || "Customer"} 👋</h2>
-        <p className="dash-welcome-description">
+      <section className="mb-6">
+        <p className="m-0 text-sm text-[var(--text-secondary)]">Selamat datang kembali!</p>
+        <h2 className="my-2 text-[28px] font-extrabold tracking-[-0.7px] text-[var(--text-primary)] max-sm:text-[23px]">Halo, {storedUser.name || "Customer"} 👋</h2>
+        <p className="m-0 text-sm text-[var(--text-muted)]">
           Kelola saldo dan transaksimu dalam satu tempat.
         </p>
       </section>
 
       {/* Tabs */}
-      <div className="dash-tabs" role="tablist">
+      <div className="mb-7 flex gap-3 overflow-x-auto pb-2" role="tablist">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             role="tab"
             aria-selected={activeTab === tab.key}
-            className={`dash-tab ${activeTab === tab.key ? "active" : ""}`}
+            className={`shrink-0 rounded-[var(--radius-md)] border px-5 py-[11px] text-[13px] font-semibold transition focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--lavender)] focus-visible:outline-offset-2 ${activeTab === tab.key ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[var(--shadow-sm)]" : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-secondary)] hover:border-[var(--primary-light)] hover:text-[var(--primary)]"}`}
             onClick={() => setActiveTab(tab.key)}
           >
             {tab.label}
@@ -426,12 +425,12 @@ export default function Dashboard() {
       {/* Overview */}
       {activeTab === "overview" && (
         <>
-          <section className="balance-card">
-            <div className="balance-content">
-              <span className="balance-badge">SALDO MERCATIX</span>
+          <section className="relative mb-10 overflow-hidden rounded-[var(--radius-xl)] bg-[linear-gradient(120deg,var(--primary-dark),var(--primary-deep)_55%,var(--primary))] px-12 py-11 text-white max-sm:px-6 max-sm:py-8">
+            <div className="relative z-[2] max-w-[560px]">
+              <span className="inline-block rounded-[30px] border border-white/20 bg-white/[0.12] px-3.5 py-2 text-[11px] font-bold tracking-[1px]">SALDO MERCATIX</span>
 
-              <div className="balance-row">
-                <h2 className="balance-amount" aria-live="polite">
+              <div className="my-[22px] mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                <h2 className="m-0 text-[40px] font-extrabold leading-[1.2] tracking-[-1px] max-sm:text-[30px]" aria-live="polite">
                   {loading
                     ? "..."
                     : hideBalance
@@ -440,7 +439,7 @@ export default function Dashboard() {
                 </h2>
 
                 <button
-                  className="balance-toggle"
+                  className="rounded-[30px] border border-white/30 bg-transparent px-3 py-1.5 text-xs font-semibold text-[var(--lavender-light)] transition hover:bg-white/[0.12] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--lavender)] focus-visible:outline-offset-2"
                   onClick={() => setHideBalance((v) => !v)}
                   aria-label={
                     hideBalance ? "Tampilkan saldo" : "Sembunyikan saldo"
@@ -450,21 +449,21 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              <p>
+              <p className="m-0 text-sm leading-[1.8] text-[var(--lavender-light)]">
                 Pemasukan dan pengeluaran bulan ini sudah dihitung dari
                 riwayat transaksimu.
               </p>
 
-              <div className="balance-buttons">
+              <div className="mt-[22px] flex flex-wrap gap-3">
                 <button
-                  className="balance-button primary"
+                  className="rounded-[var(--radius-md)] border border-transparent bg-white px-[22px] py-[13px] text-[13px] font-bold text-[var(--primary-deep)] transition hover:-translate-y-0.5 hover:bg-[var(--lavender-bg)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--lavender)] focus-visible:outline-offset-2"
                   onClick={() => openAction("topup")}
                 >
                   Top Up Saldo
                 </button>
 
                 <button
-                  className="balance-button ghost"
+                  className="rounded-[var(--radius-md)] border border-white/35 bg-transparent px-[22px] py-[13px] text-[13px] font-bold text-white transition hover:bg-white/[0.12] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--lavender)] focus-visible:outline-offset-2"
                   onClick={() => openAction("transfer")}
                 >
                   Transfer
@@ -472,51 +471,51 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="balance-decoration" aria-hidden="true">
+            <div className="pointer-events-none absolute right-[8%] top-1/2 -translate-y-1/2 text-[180px] opacity-[0.18] max-[900px]:right-[2%] max-[900px]:text-[140px] max-sm:-right-[15px] max-sm:bottom-[-20px] max-sm:top-auto max-sm:translate-y-0 max-sm:text-[100px]" aria-hidden="true">
               💳
             </div>
           </section>
 
           {/* Quick actions */}
-          <section className="dash-section">
-            <div className="dash-heading">
-              <h2>Fitur Cepat</h2>
-              <p>Pilih layanan yang kamu butuhkan.</p>
+          <section className="mb-10">
+            <div className="mb-5">
+              <h2 className="m-0 text-xl font-extrabold text-[var(--text-primary)]">Fitur Cepat</h2>
+              <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">Pilih layanan yang kamu butuhkan.</p>
             </div>
 
-            <div className="action-grid">
+            <div className="grid grid-cols-4 gap-5 max-[900px]:grid-cols-2 max-sm:gap-3">
               {Object.entries(actions).map(([key, action]) => (
                 <button
-                  className="action-card"
+                  className="flex cursor-pointer flex-col items-start gap-1 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-5 text-left text-[var(--text-primary)] transition duration-200 hover:-translate-y-1 hover:border-[var(--primary-light)] hover:shadow-[var(--shadow-md)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--lavender)] focus-visible:outline-offset-2 max-sm:p-4"
                   key={key}
                   onClick={() => openAction(key)}
                 >
-                  <span className="action-icon">{action.icon}</span>
-                  <strong>{action.label}</strong>
-                  <span>{action.hint}</span>
+                  <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] bg-[var(--lavender-bg)] text-xl font-bold text-[var(--primary)] transition group-hover:bg-[var(--primary)] group-hover:text-white">{action.icon}</span>
+                  <strong className="text-sm">{action.label}</strong>
+                  <span className="text-xs text-[var(--text-muted)]">{action.hint}</span>
                 </button>
               ))}
             </div>
           </section>
 
           {/* Summary */}
-          <section className="dash-section">
-            <div className="dash-heading">
-              <h2>Ringkasan Bulan Ini</h2>
-              <p>{monthLabel}</p>
+          <section className="mb-10">
+            <div className="mb-5">
+              <h2 className="m-0 text-xl font-extrabold text-[var(--text-primary)]">Ringkasan Bulan Ini</h2>
+              <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">{monthLabel}</p>
             </div>
 
-            <div className="stat-grid">
-              <div className="stat-card">
-                <span>Uang masuk</span>
-                <strong className="in">
+            <div className="grid grid-cols-2 gap-5 max-sm:grid-cols-1 max-sm:gap-3">
+              <div className="flex flex-col gap-2 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-6 py-5">
+                <span className="text-[13px] text-[var(--text-secondary)]">Uang masuk</span>
+                <strong className="text-[22px] font-extrabold tracking-[-0.5px] text-[var(--success)]">
                   {formatPrice(summary.income)}
                 </strong>
               </div>
 
-              <div className="stat-card">
-                <span>Uang keluar</span>
-                <strong className="out">
+              <div className="flex flex-col gap-2 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-6 py-5">
+                <span className="text-[13px] text-[var(--text-secondary)]">Uang keluar</span>
+                <strong className="text-[22px] font-extrabold tracking-[-0.5px] text-[var(--text-primary)]">
                   {formatPrice(summary.expense)}
                 </strong>
               </div>
@@ -524,15 +523,15 @@ export default function Dashboard() {
           </section>
 
           {/* Recent transactions */}
-          <section className="dash-section">
-            <div className="dash-heading-row">
-              <div className="dash-heading">
-                <h2>Transaksi Terakhir</h2>
-                <p>5 aktivitas terbaru di akunmu.</p>
+          <section className="mb-10">
+            <div className="mb-5 flex items-start justify-between gap-3">
+              <div className="mb-5">
+                <h2 className="m-0 text-xl font-extrabold text-[var(--text-primary)]">Transaksi Terakhir</h2>
+                <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">5 aktivitas terbaru di akunmu.</p>
               </div>
 
               <button
-                className="link-button"
+                className="whitespace-nowrap border-0 bg-transparent px-0 py-1 text-[13px] font-bold text-[var(--primary)] hover:text-[var(--primary-hover)] hover:underline focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--lavender)] focus-visible:outline-offset-2"
                 onClick={() => setActiveTab("history")}
               >
                 Lihat semua
@@ -546,25 +545,23 @@ export default function Dashboard() {
 
       {/* History */}
       {activeTab === "history" && (
-        <section className="dash-section">
-          <div className="dash-heading-row">
-            <div className="dash-heading">
-              <h2>Riwayat Transaksi</h2>
-              <p>Semua aktivitas keuangan di akunmu.</p>
+        <section className="mb-10">
+          <div className="mb-5 flex items-start justify-between gap-3">
+            <div>
+              <h2 className="m-0 text-xl font-extrabold text-[var(--text-primary)]">Riwayat Transaksi</h2>
+              <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">Semua aktivitas keuangan di akunmu.</p>
             </div>
 
-            <span className="dash-count">
+            <span className="whitespace-nowrap text-[13px] font-bold text-[var(--primary)]">
               {filteredTransactions.length} Transaksi
             </span>
           </div>
 
-          <div className="dash-filters">
+          <div className="mb-5 flex gap-3 overflow-x-auto pb-2">
             {historyFilters.map((filter) => (
               <button
                 key={filter.key}
-                className={`dash-filter ${
-                  historyFilter === filter.key ? "active" : ""
-                }`}
+                className={`shrink-0 rounded-[var(--radius-md)] border px-5 py-[11px] text-[13px] font-semibold transition focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--lavender)] focus-visible:outline-offset-2 ${historyFilter === filter.key ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[var(--shadow-sm)]" : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-secondary)] hover:border-[var(--primary-light)] hover:text-[var(--primary)]"}`}
                 onClick={() => setHistoryFilter(filter.key)}
               >
                 {filter.label}
@@ -577,29 +574,29 @@ export default function Dashboard() {
       )}
 
       {/* Footer */}
-      <footer className="dash-footer">
+      <footer className="mt-[60px] border-t border-[var(--border)] py-6 text-center text-xs text-[var(--text-muted)]">
         © 2026 Mercatix. All rights reserved.
       </footer>
 
       {/* Modal */}
       {config && (
-        <div className="modal-overlay" onClick={closeAction}>
+        <div className="fixed inset-0 z-[60] flex items-center transition-opacity duration-200 justify-center bg-[rgba(24,12,45,0.45)] p-4" onClick={closeAction}>
           <div
-            className="modal"
+            className="max-h-[90vh] w-full max-w-[440px] overflow-y-auto transition-transform duration-200 rounded-[var(--radius-xl)] bg-[var(--surface)] p-7 shadow-[var(--shadow-lg)]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
             ref={modalRef}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-header">
+            <div className="mb-6 flex items-start justify-between gap-3">
               <div>
-                <h3 id="modal-title">{config.title}</h3>
-                <p>{config.description}</p>
+                <h3 id="modal-title" className="m-0 text-lg font-extrabold">{config.title}</h3>
+                <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">{config.description}</p>
               </div>
 
               <button
-                className="modal-close"
+                className="rounded-[var(--radius-sm)] bg-transparent px-3 py-2 text-[var(--text-secondary)] hover:bg-[var(--lavender-bg)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--lavender)] focus-visible:outline-offset-2"
                 onClick={closeAction}
                 disabled={submitting}
                 aria-label="Tutup"
@@ -610,11 +607,12 @@ export default function Dashboard() {
 
             <form onSubmit={handleSubmitAction}>
               {config.fields.map((field) => (
-                <label className="field" key={field.name}>
-                  <span>{field.label}</span>
+                <label className="mb-4 block" key={field.name}>
+                  <span className="mb-2 block text-xs font-semibold text-[var(--text-secondary)]">{field.label}</span>
 
                   {field.options ? (
                     <select
+                      className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[13px] text-[var(--text-primary)] outline-none transition focus:border-[var(--primary-light)] focus:bg-[var(--surface)] focus:shadow-[0_0_0_3px_var(--lavender-soft)]"
                       value={form[field.name]}
                       onChange={(e) =>
                         setForm({
@@ -632,6 +630,7 @@ export default function Dashboard() {
                     </select>
                   ) : (
                     <input
+                      className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[13px] text-[var(--text-primary)] outline-none transition focus:border-[var(--primary-light)] focus:bg-[var(--surface)] focus:shadow-[0_0_0_3px_var(--lavender-soft)]"
                       type="text"
                       placeholder={field.placeholder}
                       value={form[field.name]}
@@ -647,13 +646,14 @@ export default function Dashboard() {
                 </label>
               ))}
 
-              <label className="field">
-                <span>Nominal</span>
+              <label className="mb-4 block">
+                <span className="mb-2 block text-xs font-semibold text-[var(--text-secondary)]">Nominal</span>
 
-                <div className="amount-input">
-                  <em>Rp</em>
+                <div className="relative">
+                  <em className="absolute left-4 top-1/2 -translate-y-1/2 text-[13px] font-bold not-italic text-[var(--text-muted)]">Rp</em>
 
                   <input
+                    className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--background)] py-3 pl-11 pr-4 text-base font-bold text-[var(--text-primary)] outline-none transition focus:border-[var(--primary-light)] focus:bg-[var(--surface)] focus:shadow-[0_0_0_3px_var(--lavender-soft)]"
                     type="text"
                     inputMode="numeric"
                     placeholder="0"
@@ -668,9 +668,10 @@ export default function Dashboard() {
                 </div>
               </label>
 
-              <div className="quick-amounts">
+              <div className="mb-4 flex flex-wrap gap-2">
                 {quickAmounts.map((quick) => (
                   <button
+                    className="rounded-[30px] border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-xs font-semibold text-[var(--text-secondary)] transition hover:border-[var(--primary)] hover:bg-[var(--lavender-bg)] hover:text-[var(--primary)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--lavender)] focus-visible:outline-offset-2"
                     type="button"
                     key={quick}
                     onClick={() => setAmount(String(quick))}
@@ -682,20 +683,20 @@ export default function Dashboard() {
               </div>
 
               {config.checkBalance && (
-                <p className="modal-balance">
+                <p className="mb-4 text-xs text-[var(--text-secondary)]">
                   Saldo tersedia: {formatPrice(balance)}
                 </p>
               )}
 
               {formError && (
-                <p className="form-error" role="alert">
+                <p className="mb-4 rounded-[var(--radius-sm)] bg-red-50 px-3.5 py-2.5 text-xs leading-relaxed text-[var(--danger)]" role="alert">
                   {formError}
                 </p>
               )}
 
               <button
                 type="submit"
-                className="btn-primary btn-block"
+                className="w-full rounded-[var(--radius-md)] bg-[var(--primary)] px-[22px] py-[13px] text-[13px] font-bold text-white transition hover:-translate-y-0.5 hover:bg-[var(--primary-hover)] disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={submitting || loading}
               >
                 {submitting ? "Memproses..." : config.submit}
@@ -707,7 +708,7 @@ export default function Dashboard() {
 
       {/* Toast */}
       {toast && (
-        <div className="toast" role="status">
+        <div className="fixed bottom-6 left-1/2 z-[70] max-w-[calc(100%-32px)] -translate-x-1/2  rounded-[var(--radius-md)] bg-[var(--primary-dark)] px-[22px] py-3.5 text-[13px] font-semibold text-white shadow-[var(--shadow-lg)]" role="status">
           {toast}
         </div>
       )}

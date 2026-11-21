@@ -44,14 +44,6 @@ export default function Sidebar({ searchBox, children }) {
     }
   ];
 
-  useEffect(() => {
-    document.body.style.overflow = sidebarOpen ? "hidden" : "";
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [sidebarOpen]);
-
   return (
     <>
       <CartBox />

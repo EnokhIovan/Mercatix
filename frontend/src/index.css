@@ -44,6 +44,45 @@
   --radius-xl: 24px;
 }
 
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f9f7fc;
+}
+
+/* Thumb */
+::-webkit-scrollbar-thumb {
+  background: #d8cbed;
+  border-radius: 10px;
+  border: 2px solid #f9f7fc;
+}
+
+/* Thumb Hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #a78bca;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d8cbed #f9f7fc;
+}
+
+body {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+button {
+  @apply cursor-pointer;
+}
+
+
 .button-icon {
   padding: 8px 12px;
   border: none;
