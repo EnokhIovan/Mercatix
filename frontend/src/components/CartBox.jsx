@@ -36,9 +36,15 @@ export default function CartBox() {
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#180C2D]/45 p-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-5">
+      {/* Overlay */}
+      <div
+        className="absolute inset-0 z-40 bg-[rgba(46,16,101,0.45)]"
+        onClick={() => setIsCartOpen(false)}
+      />
+
       {/* Cart Modal */}
-      <div className="flex max-h-[85vh] w-full max-w-[480px] flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xl">
+      <div className="flex inset-0 z-100 max-h-[85vh] w-full max-w-[480px] flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-lg)]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border)] p-6">
           <div>
@@ -51,7 +57,16 @@ export default function CartBox() {
             </p>
           </div>
 
-          <button onClick={() => setIsCartOpen(false)} className="button-icon">
+          <button
+            onClick={() => setIsCartOpen(false)}
+            className="
+              rounded-lg px-3 py-2
+              text-[var(--text-secondary)]
+              transition
+              hover:bg-[var(--lavender-bg)]
+              hover:text-[var(--primary)]
+            "
+          >
             ✕
           </button>
         </div>
@@ -61,7 +76,13 @@ export default function CartBox() {
           {cartItems.map((item) => (
             <div
               key={item.id}
-              className="group flex gap-4 rounded-xl border border-transparent p-3 transition duration-200 hover:border-[var(--primary-light)] hover:bg-[var(--lavender-bg)]"
+              className="
+                group flex gap-4 rounded-xl
+                border border-transparent p-3
+                transition duration-200
+                hover:border-[var(--lavender-light)]
+                hover:bg-[var(--lavender-bg)]
+              "
             >
               {/* Product Image */}
               <img
@@ -88,11 +109,26 @@ export default function CartBox() {
                   </strong>
 
                   {/* Quantity Control */}
-                  <div className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1">
+                  <div
+                    className="
+                    flex items-center gap-2 rounded-lg
+                    border border-[var(--border)]
+                    bg-[var(--surface)] p-1
+                  "
+                  >
                     <button
                       onClick={() => updateQuantity(item.id, -1)}
                       disabled={item.quantity <= 1}
-                      className="flex h-6 w-6 items-center justify-center rounded-md text-sm text-[var(--text-secondary)] transition hover:bg-[var(--lavender-bg)] hover:text-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-30"
+                      className="
+                        flex h-6 w-6 items-center justify-center
+                        rounded-md text-sm
+                        text-[var(--text-secondary)]
+                        transition
+                        hover:bg-[var(--lavender-bg)]
+                        hover:text-[var(--primary)]
+                        disabled:cursor-not-allowed
+                        disabled:opacity-30
+                      "
                     >
                       −
                     </button>
@@ -104,7 +140,16 @@ export default function CartBox() {
                     <button
                       onClick={() => updateQuantity(item.id, 1)}
                       disabled={item.quantity >= 10}
-                      className="flex h-6 w-6 items-center justify-center rounded-md text-sm text-[var(--text-secondary)] transition hover:bg-[var(--lavender-bg)] hover:text-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-30"
+                      className="
+                        flex h-6 w-6 items-center justify-center
+                        rounded-md text-sm
+                        text-[var(--text-secondary)]
+                        transition
+                        hover:bg-[var(--lavender-bg)]
+                        hover:text-[var(--primary)]
+                        disabled:cursor-not-allowed
+                        disabled:opacity-30
+                      "
                     >
                       +
                     </button>
@@ -127,7 +172,15 @@ export default function CartBox() {
             </strong>
           </div>
 
-          <button className="w-full rounded-lg bg-[var(--primary)] py-3.5 text-sm font-bold text-white transition hover:bg-[var(--primary-dark)]">
+          <button
+            className="
+            w-full rounded-lg
+            bg-[var(--primary)] py-3.5
+            text-sm font-bold text-white
+            transition
+            hover:bg-[var(--primary-hover)]
+          "
+          >
             Buy Now
           </button>
         </div>

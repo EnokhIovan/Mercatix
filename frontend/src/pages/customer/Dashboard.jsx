@@ -1,6 +1,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Sidebar from "../../components/Sidebar";
+import PageLayout from "../../layouts/PageLayout";
 import { getBalance, topUp, transfer } from "../../api/api";
 
 const initialTransactions = [
@@ -397,7 +397,7 @@ export default function Dashboard() {
     );
 
   return (
-    <Sidebar>
+    <PageLayout title="Dashboard">
       {/* Welcome */}
       <section className="mb-6">
         <p className="m-0 text-sm text-[var(--text-secondary)]">Selamat datang kembali!</p>
@@ -712,6 +712,6 @@ export default function Dashboard() {
           {toast}
         </div>
       )}
-    </Sidebar>
+    </PageLayout>
   );
 }
