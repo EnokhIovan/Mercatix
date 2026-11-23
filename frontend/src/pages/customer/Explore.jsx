@@ -3,7 +3,7 @@ import PageLayout from "../../layouts/PageLayout";
 import BuyBox from "../../components/BuyBox";
 import { BuyProvider, useBuy } from "../../context/BuyContext";
 import { useCart } from "../../context/CartContext";
-import { getProducts } from "../../api/api";
+import { getProducts, cartItemsAction } from "../../api/api";
 
 const categories = [
   "Semua",
@@ -29,7 +29,7 @@ function ExploreContent() {
   const [loading, setLoading] = useState(true);
   const { buyBoxOpen, setBuyBoxOpen } = useBuy();
 
-  const { setCartCount } = useCart();
+  const { setCartCount, refreshCart } = useCart();
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -49,7 +49,7 @@ function ExploreContent() {
     fetchProducts();
   }, []);
 
-  console.log(products);
+  // console.log(products);
 
   // Get Merchant Name
   const getMerchantName = (merchant) => {
@@ -94,13 +94,23 @@ function ExploreContent() {
   };
 
   // Add to Cart
-  const handleAddToCart = () => {
-    setCartCount((count) => count + 1);
+  const handleAddToCart = async (productId) => {
+    try {
+      const result = await cartItemsAction(productId, "create");
+
+      if (result.created) {
+        await refreshCart();
+      }
+    } catch (error) {
+      console.error("Gagal menambahkan produk ke cart:", error);
+    }
   };
 
   return (
     <>
-      <BuyBox dataProduct={products.find((product) => product.id === selectedId)}/>
+      <BuyBox
+        dataProduct={products.find((product) => product.id === selectedId)}
+      />
 
       <PageLayout title="Explore" searchBox="true">
         {/* Welcome */}
@@ -258,7 +268,7 @@ function ExploreContent() {
                       </button>
 
                       <button
-                        onClick={handleAddToCart}
+                        onClick={() => handleAddToCart(product.id)}
                         className="mt-4 w-10 shrink-0 rounded-lg bg-[var(--lavender-bg)] py-2.5 text-xs font-bold text-[var(--primary-deep)] transition hover:bg-[var(--primary)] hover:text-white"
                       >
                         🛒

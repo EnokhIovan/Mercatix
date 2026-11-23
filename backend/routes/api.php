@@ -15,6 +15,8 @@ Route::middleware(AuthenticateToken::class)->group(function () {
   Route::get('/products', [ProductController::class, 'index']);
   Route::get('/wallet', [WalletController::class, 'index']);
   Route::get('/cart', [CartController::class, 'index']);
+  Route::post('/cart/action', [CartController::class, 'action']);
+  Route::post('/cart/quantity', [CartController::class, 'quantity']);
   Route::post('/wallet/topup', [WalletController::class, 'topup']);
   Route::post('/wallet/transfer', [WalletController::class, 'deduct']);
 });

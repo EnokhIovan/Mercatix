@@ -1,20 +1,42 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { getCartItems } from "../api/api";
 
-const CartContext = createContext(null);
+const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cartCount, setCartCount] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+
+  const refreshCart = async () => {
+    try {
+      const result = await getCartItems();
+      setCartItems(result.data || []);
+    } catch (error) {
+      console.error("Fetch cart error:", error);
+    }
+  };
+
+  useEffect(() => {
+    refreshCart();
+  }, []);
+
+  const cartCount = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
 
   return (
-    <CartContext.Provider
-      value={{ cartCount, setCartCount, isCartOpen, setIsCartOpen }}
-    >
+    <CartContext.Provider value={{
+      isCartOpen,
+      setIsCartOpen,
+      cartItems,
+      setCartItems,
+      cartCount,
+      refreshCart,
+    }}>
       {children}
     </CartContext.Provider>
   );
 }
 
-export function useCart() {
-  return useContext(CartContext);
-}
+export const useCart = () => useContext(CartContext);

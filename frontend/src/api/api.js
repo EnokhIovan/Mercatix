@@ -48,8 +48,18 @@ export const getProducts = () => request("/products");
 export const getProduct = (id) =>
   request(`/products/${id}`);
 
-// Products
+// Cart
 export const getCartItems = () => request("/cart");
+export const cartItemsAction = (product_id, action) =>
+  request("/cart/action", {
+    method: "POST",
+    body: JSON.stringify({product_id, action}),
+  });
+export const cartItemsQuantity = (product_id, quantity) =>
+  request("/cart/quantity", {
+    method: "POST",
+    body: JSON.stringify({product_id, quantity}),
+  });
 
 // Customers
 export const getCustomers = () => request("/customers");
