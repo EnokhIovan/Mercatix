@@ -13,7 +13,7 @@ function AppRoutes() {
     <BrowserRouter>
       <CartProvider>
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Navigate to="/explore" replace />} />
           <Route path="/login" element={<Login />} />
 
           <Route element={<ProtectedRoute />}>
