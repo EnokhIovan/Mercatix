@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from "react";
 
 const BuyContext = createContext(null);
 
-export function CartProvider({ children }) {
+export function BuyProvider({ children }) {
   const [buyBoxOpen, setBuyBoxOpen] = useState(false);
   const [productId, setPrductId] = useState(0);
 

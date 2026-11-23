@@ -1,8 +1,8 @@
 import { useState } from "react";
+import {useBuy} from "../context/BuyContext";
 
 export default function BuyBox(){
-  const [buyBoxOpen, setBuyBoxOpen] = useState(true);
-
+  const {buyBoxOpen, setBuyBoxOpen} = useBuy();
   if(!buyBoxOpen) return null;
 
   return (

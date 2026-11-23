@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PageLayout from "../../layouts/PageLayout";
 import BuyBox from "../../components/BuyBox";
+import {BuyProvider, useBuy} from "../../context/BuyContext";
 import { useCart } from "../../context/CartContext";
 import { getProducts } from "../../api/api";
 
@@ -12,12 +13,20 @@ const categories = [
   "Dessert",
   "Minuman",
 ];
+export default function Explore() {
+  return(
+    <BuyProvider>
+      <ExploreContent/>
+    </BuyProvider>
+  )
+}
 
-export default function CustomerDashboard() {
+function ExploreContent() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { buyBoxOpen, setBuyBoxOpen } = useBuy();  
 
   const { setCartCount } = useCart();
 
@@ -88,7 +97,6 @@ export default function CustomerDashboard() {
 
   return (
     <>
-    
       <BuyBox/>
 
       <PageLayout title="Explore" searchBox="true">
@@ -237,7 +245,7 @@ export default function CustomerDashboard() {
                     {/* Action Buttons */}
                     <div className="flex gap-2">
                       <button
-                        onClick={handleAddToCart}
+                        onClick={() => setBuyBoxOpen(true)}
                         className="mt-4 flex-1 rounded-lg bg-[var(--primary)] px-3 py-2.5 text-xs font-bold text-white transition hover:bg-[var(--primary-hover)]"
                       >
                         Beli
