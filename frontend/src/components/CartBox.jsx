@@ -108,51 +108,69 @@ export default function CartBox() {
                     Rp{(item.price * item.quantity).toLocaleString("id-ID")}
                   </strong>
 
-                  {/* Quantity Control */}
-                  <div
-                    className="
-                    flex items-center gap-2 rounded-lg
-                    border border-[var(--border)]
-                    bg-[var(--surface)] p-1
-                  "
-                  >
-                    <button
-                      onClick={() => updateQuantity(item.id, -1)}
-                      disabled={item.quantity <= 1}
-                      className="
-                        flex h-6 w-6 items-center justify-center
-                        rounded-md text-sm
-                        text-[var(--text-secondary)]
-                        transition
-                        hover:bg-[var(--lavender-bg)]
-                        hover:text-[var(--primary)]
-                        disabled:cursor-not-allowed
-                        disabled:opacity-30
-                      "
-                    >
-                      −
-                    </button>
+                  <div className="flex flex-row gap-3">
+                    <div className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1">
+                      <button
+                        onClick={() => {}}
+                        className="
+                          flex h-8 w-8 items-center justify-center
+                          rounded-md text-red-500
+                          transition duration-200
+                          hover:bg-red-50 hover:text-red-600
+                          active:scale-90
+                        "
+                        title="Hapus produk"
+                      >
+                        🗑
+                      </button>
+                    </div>
 
-                    <span className="min-w-5 text-center text-xs font-bold text-[var(--text-primary)]">
-                      {item.quantity}
-                    </span>
-
-                    <button
-                      onClick={() => updateQuantity(item.id, 1)}
-                      disabled={item.quantity >= 10}
+                    {/* Quantity Control */}
+                    <div
                       className="
-                        flex h-6 w-6 items-center justify-center
-                        rounded-md text-sm
-                        text-[var(--text-secondary)]
-                        transition
-                        hover:bg-[var(--lavender-bg)]
-                        hover:text-[var(--primary)]
-                        disabled:cursor-not-allowed
-                        disabled:opacity-30
-                      "
+                      flex items-center gap-2 rounded-lg
+                      border border-[var(--border)]
+                      bg-[var(--surface)] p-1
+                    "
                     >
-                      +
-                    </button>
+                      <button
+                        onClick={() => updateQuantity(item.id, -1)}
+                        disabled={item.quantity <= 1}
+                        className="
+                          flex h-6 w-6 items-center justify-center
+                          rounded-md text-sm
+                          text-[var(--text-secondary)]
+                          transition
+                          hover:bg-[var(--lavender-bg)]
+                          hover:text-[var(--primary)]
+                          disabled:cursor-not-allowed
+                          disabled:opacity-30
+                        "
+                      >
+                        −
+                      </button>
+
+                      <span className="min-w-5 text-center text-xs font-bold text-[var(--text-primary)]">
+                        {item.quantity}
+                      </span>
+
+                      <button
+                        onClick={() => updateQuantity(item.id, 1)}
+                        disabled={item.quantity >= 10}
+                        className="
+                          flex h-6 w-6 items-center justify-center
+                          rounded-md text-sm
+                          text-[var(--text-secondary)]
+                          transition
+                          hover:bg-[var(--lavender-bg)]
+                          hover:text-[var(--primary)]
+                          disabled:cursor-not-allowed
+                          disabled:opacity-30
+                        "
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -164,7 +182,7 @@ export default function CartBox() {
         <div className="space-y-5 border-t border-[var(--border)] p-6">
           <div className="flex items-center justify-between">
             <span className="text-sm text-[var(--text-secondary)]">
-              Subtotal
+              total
             </span>
 
             <strong className="text-lg font-extrabold text-[var(--text-primary)]">

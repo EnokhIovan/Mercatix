@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import PageLayout from "../../layouts/PageLayout";
 import BuyBox from "../../components/BuyBox";
-import {BuyProvider, useBuy} from "../../context/BuyContext";
+import { BuyProvider, useBuy } from "../../context/BuyContext";
 import { useCart } from "../../context/CartContext";
 import { getProducts } from "../../api/api";
 
@@ -14,19 +14,20 @@ const categories = [
   "Minuman",
 ];
 export default function Explore() {
-  return(
+  return (
     <BuyProvider>
-      <ExploreContent/>
+      <ExploreContent />
     </BuyProvider>
-  )
+  );
 }
 
 function ExploreContent() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [products, setProducts] = useState([]);
+  const [selectedId, setSelectedId] = useState(0);
   const [loading, setLoading] = useState(true);
-  const { buyBoxOpen, setBuyBoxOpen } = useBuy();  
+  const { buyBoxOpen, setBuyBoxOpen } = useBuy();
 
   const { setCartCount } = useCart();
 
@@ -47,6 +48,8 @@ function ExploreContent() {
 
     fetchProducts();
   }, []);
+
+  console.log(products);
 
   // Get Merchant Name
   const getMerchantName = (merchant) => {
@@ -97,7 +100,7 @@ function ExploreContent() {
 
   return (
     <>
-      <BuyBox/>
+      <BuyBox dataProduct={products.find((product) => product.id === selectedId)}/>
 
       <PageLayout title="Explore" searchBox="true">
         {/* Welcome */}
@@ -127,8 +130,8 @@ function ExploreContent() {
             </h2>
 
             <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--lavender-light)]">
-              Jelajahi berbagai pilihan makanan menarik dari merchant favoritmu di
-              Mercatix.
+              Jelajahi berbagai pilihan makanan menarik dari merchant favoritmu
+              di Mercatix.
             </p>
 
             <button
@@ -245,7 +248,10 @@ function ExploreContent() {
                     {/* Action Buttons */}
                     <div className="flex gap-2">
                       <button
-                        onClick={() => setBuyBoxOpen(true)}
+                        onClick={() => {
+                          setBuyBoxOpen(true);
+                          setSelectedId(product.id);
+                        }}
                         className="mt-4 flex-1 rounded-lg bg-[var(--primary)] px-3 py-2.5 text-xs font-bold text-white transition hover:bg-[var(--primary-hover)]"
                       >
                         Beli
