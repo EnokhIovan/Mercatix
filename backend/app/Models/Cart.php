@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cart extends Model
 {
   protected $fillable = [
     'user_id',
+    'product_id',
+    'quantity',
   ];
 
   public function user(): BelongsTo
@@ -17,8 +18,8 @@ class Cart extends Model
     return $this->belongsTo(User::class);
   }
 
-  public function items(): HasMany
+  public function product(): BelongsTo
   {
-    return $this->hasMany(CartItem::class);
+    return $this->belongsTo(Product::class);
   }
 }

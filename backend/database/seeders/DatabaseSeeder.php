@@ -8,13 +8,14 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    public function run(): void
-    {
+  public function run(): void
+  {
     $this->call([
-        UserSeeder::class,
-        WalletSeeder::class,
-        MerchantSeeder::class,
-        ProductSeeder::class,
+      UserSeeder::class,
+      WalletSeeder::class,
+      MerchantSeeder::class,
+      ProductSeeder::class,
+      CartSeeder::class,
     ]);
-    }
+  }
 }

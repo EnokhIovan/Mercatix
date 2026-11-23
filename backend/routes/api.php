@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Middleware\AuthenticateToken;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\WalletController;
+use App\Http\Controllers\Api\CartController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -13,6 +14,7 @@ Route::middleware(AuthenticateToken::class)->group(function () {
   Route::get('/user', [AuthController::class, 'user']);
   Route::get('/products', [ProductController::class, 'index']);
   Route::get('/wallet', [WalletController::class, 'index']);
+  Route::get('/cart', [CartController::class, 'index']);
   Route::post('/wallet/topup', [WalletController::class, 'topup']);
   Route::post('/wallet/transfer', [WalletController::class, 'deduct']);
 });

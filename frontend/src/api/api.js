@@ -48,6 +48,9 @@ export const getProducts = () => request("/products");
 export const getProduct = (id) =>
   request(`/products/${id}`);
 
+// Products
+export const getCartItems = () => request("/cart");
+
 // Customers
 export const getCustomers = () => request("/customers");
 

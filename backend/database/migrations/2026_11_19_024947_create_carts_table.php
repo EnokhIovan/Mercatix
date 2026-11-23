@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -10,8 +11,12 @@ return new class extends Migration
   {
     Schema::create('carts', function (Blueprint $table) {
       $table->id();
-      $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
+      $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+      $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+      $table->unsignedInteger('quantity')->default(1);
       $table->timestamps();
+
+      $table->unique(['user_id', 'product_id']);
     });
   }
 

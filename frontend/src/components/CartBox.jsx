@@ -1,17 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { products } from "../dummy/products";
 import { useCart } from "../context/CartContext";
+import { getCartItems } from "../api/api";
 
 export default function CartBox() {
   const { isCartOpen, setIsCartOpen } = useCart();
-  if (!isCartOpen) return null;
 
-  const [cartItems, setCartItems] = useState([
-    { ...products[0], quantity: 2 },
-    { ...products[1], quantity: 1 },
-    { ...products[4], quantity: 3 },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+  // const [cartItems, setCartItems] = useState([
+  //   { ...products[0], quantity: 2 },
+  //   { ...products[1], quantity: 1 },
+  //   { ...products[4], quantity: 3 },
+  // ]);
+  
+  useEffect(() => {
+    async function fetchCartItems(){
+      try {
+        console.log("Fetching cart items...");
 
+        const result = await getCartItems();
+        console.log("Cart result:", result.data);
+        setCartItems(result.data || [])
+      } catch(error) {
+        console.error("Fetch cart error:", error);
+      }
+    }
+
+    fetchCartItems()
+  }, [])
+  
   const updateQuantity = (id, change) => {
     setCartItems((items) =>
       items.map((item) =>
@@ -34,6 +51,8 @@ export default function CartBox() {
     (total, item) => total + item.quantity,
     0,
   );
+
+  if (!isCartOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-5">
@@ -182,7 +201,7 @@ export default function CartBox() {
         <div className="space-y-5 border-t border-[var(--border)] p-6">
           <div className="flex items-center justify-between">
             <span className="text-sm text-[var(--text-secondary)]">
-              total
+              Total
             </span>
 
             <strong className="text-lg font-extrabold text-[var(--text-primary)]">

@@ -38,7 +38,7 @@ function Login() {
 
       localStorage.setItem('token', data.token);
 
-      navigate('/dashboard');
+      navigate('/explore');
     } catch (err) {
       setError(err.message || 'Terjadi kesalahan.');
     } finally {
