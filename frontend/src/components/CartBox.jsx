@@ -1,23 +1,16 @@
-
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { cartItemsAction, cartItemsQuantity } from "../api/api";
 
 export default function CartBox() {
-  const {
-    isCartOpen,
-    setIsCartOpen,
-    cartItems,
-    refreshCart,
-  } = useCart();
+  const { isCartOpen, setCartItems, setIsCartOpen, cartItems, refreshCart } =
+    useCart();
 
   const [loadingItems, setLoadingItems] = useState([]);
 
   const setItemLoading = (productId, loading) => {
     setLoadingItems((items) =>
-      loading
-        ? [...items, productId]
-        : items.filter((id) => id !== productId)
+      loading ? [...items, productId] : items.filter((id) => id !== productId),
     );
   };
 
@@ -28,13 +21,29 @@ export default function CartBox() {
 
     setItemLoading(item.id, true);
 
-    try {
-      // console.log(item.id)
-      await cartItemsQuantity(item.id,quantity);
+    setCartItems((items) =>
+      items.map((cartItem) =>
+        cartItem.id === item.id
+          ? { ...cartItem, quantity }
+          : cartItem
+      )
+    );
 
-      await refreshCart();
+    try {
+      await cartItemsQuantity(item.id, quantity);
     } catch (error) {
       console.error("Update quantity error:", error);
+
+      // Rollback jika gagal
+      setCartItems((items) =>
+        items.map((cartItem) =>
+          cartItem.id === item.id
+            ? { ...cartItem, quantity: item.quantity }
+            : cartItem
+        )
+      );
+    } finally {
+      setItemLoading(item.id, false);
     }
   };
 
@@ -53,12 +62,12 @@ export default function CartBox() {
 
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
-    0
+    0,
   );
 
   const totalQuantity = cartItems.reduce(
     (total, item) => total + item.quantity,
-    0
+    0,
   );
 
   if (!isCartOpen) return null;
@@ -72,12 +81,14 @@ export default function CartBox() {
       />
 
       {/* Cart Modal */}
-      <div className="
+      <div
+        className="
         relative z-50 flex max-h-[85vh] w-full max-w-[480px]
         flex-col overflow-hidden rounded-2xl
         border border-[var(--border)]
         bg-[var(--surface)] shadow-[var(--shadow-lg)]
-      ">
+      "
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border)] p-6">
           <div>
@@ -161,11 +172,13 @@ export default function CartBox() {
 
                       <div className="flex flex-row gap-3">
                         {/* Delete */}
-                        <div className="
+                        <div
+                          className="
                           flex items-center gap-2 rounded-lg
                           border border-[var(--border)]
                           bg-[var(--surface)] p-1
-                        ">
+                        "
+                        >
                           <button
                             onClick={() => handleDelete(item.id)}
                             disabled={isLoading}
@@ -184,11 +197,13 @@ export default function CartBox() {
                         </div>
 
                         {/* Quantity Control */}
-                        <div className="
+                        <div
+                          className="
                           flex items-center gap-2 rounded-lg
                           border border-[var(--border)]
                           bg-[var(--surface)] p-1
-                        ">
+                        "
+                        >
                           <button
                             onClick={() => updateQuantity(item, -1)}
                             disabled={item.quantity <= 1 || isLoading}
@@ -237,9 +252,7 @@ export default function CartBox() {
         {/* Footer */}
         <div className="space-y-5 border-t border-[var(--border)] p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[var(--text-secondary)]">
-              Total
-            </span>
+            <span className="text-sm text-[var(--text-secondary)]">Total</span>
 
             <strong className="text-lg font-extrabold text-[var(--text-primary)]">
               Rp{subtotal.toLocaleString("id-ID")}
