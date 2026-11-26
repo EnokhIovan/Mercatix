@@ -48,15 +48,25 @@ export default function CartBox() {
   };
 
   const handleDelete = async (productId) => {
-    setItemLoading(productId, true);
+    const deletedItem = cartItems.find(
+      (item) => item.id === productId
+    );
+
+    if (!deletedItem) return;
+
+    // Update UI dulu
+    setCartItems((prev) =>
+      prev.filter((item) => item.id !== productId)
+    );
 
     try {
+      // Proses database berjalan setelah UI berubah
       await cartItemsAction(productId, "delete");
-      await refreshCart();
     } catch (error) {
       console.error("Delete cart item error:", error);
-    } finally {
-      setItemLoading(productId, false);
+
+      // Jika gagal, kembalikan item ke UI
+      setCartItems((prev) => [...prev, deletedItem]);
     }
   };
 
