@@ -36,11 +36,11 @@ export default function Sidebar({ searchBox, children }) {
       path: "/dashboard",
       icon: "▦",
     },
-    {
-      label: "Profile",
-      path: "/profile",
-      icon: "♙",
-    },
+    // {
+    //   label: "Profile",
+    //   path: "/profile",
+    //   icon: "♙",
+    // },
   ];
 
   return (
@@ -166,7 +166,7 @@ export default function Sidebar({ searchBox, children }) {
               </h1>
 
               {/* Search Box */}
-              {searchBox && (
+              {/* {searchBox && (
                 <div className="relative ml-auto w-full max-w-[560px] flex-1 max-sm:ml-0">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-[var(--text-muted)]">
                     ⌕
@@ -190,7 +190,7 @@ export default function Sidebar({ searchBox, children }) {
                     "
                   />
                 </div>
-              )}
+              )} */}
 
               {/* Navbar Actions */}
               <div className="ml-auto flex shrink-0 items-center gap-4">
@@ -220,6 +220,7 @@ export default function Sidebar({ searchBox, children }) {
                 </button>
 
                 <button
+                  disabled
                   className="
                     flex h-10 w-10 items-center justify-center
                     rounded-full bg-[var(--lavender-soft)] text-lg
