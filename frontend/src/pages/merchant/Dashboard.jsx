@@ -162,7 +162,7 @@ const getResponseBalance = (result) => {
   return Number(data?.balance ?? data?.wallet?.balance ?? 0);
 };
 
-export default function Dashboard() {
+export default function MerchantDashboard() {
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [activeTab, setActiveTab] = useState("overview");
@@ -397,7 +397,7 @@ export default function Dashboard() {
     );
 
   return (
-    <PageLayout title="Dashboard">
+    <PageLayout title="Dashboard M">
       {/* Welcome */}
       <section className="mb-6">
         <p className="m-0 text-sm text-[var(--text-secondary)]">Selamat datang kembali!</p>

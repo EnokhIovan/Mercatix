@@ -2,17 +2,19 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import CartBox from "../components/CartBox";
+import { useUser } from "../context/UserContext";
 
 export default function Sidebar({ searchBox, children }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useUser();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
 
   const { cartCount, setIsCartOpen } = useCart();
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  // const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -29,6 +31,11 @@ export default function Sidebar({ searchBox, children }) {
     {
       label: "Explore",
       path: "/explore",
+      icon: "▦",
+    },
+    {
+      label: "Products",
+      path: "/product",
       icon: "▦",
     },
     {
@@ -95,7 +102,7 @@ export default function Sidebar({ searchBox, children }) {
               </strong>
 
               <span className="text-xs text-[var(--text-muted)]">
-                Customer Account
+                {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "Customer"} Account
               </span>
             </div>
           </div>

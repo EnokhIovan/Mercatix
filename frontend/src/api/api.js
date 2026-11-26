@@ -22,6 +22,8 @@ async function request(endpoint, options = {}) {
   return data;
 }
 
+export const getUser = () => request("/user");
+
 // Wallet
 export const getBalance = () => request("/wallet");
 

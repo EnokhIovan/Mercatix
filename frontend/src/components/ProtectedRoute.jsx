@@ -1,9 +1,12 @@
+
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import LoadingPage from "../layouts/LoadingPage";
+import { useUser } from "../context/UserContext";
 
 function ProtectedRoute() {
   const [isValid, setIsValid] = useState(null);
+  const { setUser } = useUser();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -26,17 +29,19 @@ function ProtectedRoute() {
 
         return response.json();
       })
-      .then(() => {
+      .then((data) => {
+        setUser(data.user);
         setIsValid(true);
       })
       .catch(() => {
         localStorage.removeItem("token");
+        setUser(null);
         setIsValid(false);
       });
-  }, []);
+  }, [setUser]);
 
   if (isValid === null) {
-    return <LoadingPage action="Memverifikasi sesi"/>
+    return <LoadingPage action="Memverifikasi sesi" />;
   }
 
   return isValid
