@@ -27,17 +27,23 @@ export default function Sidebar({ searchBox, children }) {
     setSidebarOpen(false);
   };
 
+  // const user = JSON.parse(localStorage.getItem("user") || "{}");
+
   const navItems = [
     {
       label: "Explore",
       path: "/explore",
       icon: "▦",
     },
-    {
-      label: "Products",
-      path: "/product",
-      icon: "▦",
-    },
+    ...(user.role === "merchant"
+      ? [
+          {
+            label: "Products",
+            path: "/product",
+            icon: "▦",
+          },
+        ]
+      : []),
     {
       label: "Dashboard",
       path: "/dashboard",

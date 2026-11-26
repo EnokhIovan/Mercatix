@@ -15,7 +15,6 @@ return new class extends Migration
       $table->string('category');
       $table->text('description')->nullable();
       $table->decimal('price', 15, 2);
-      $table->unsignedInteger('stock')->default(0);
       $table->string('image')->nullable();
       $table->boolean('is_available')->default(true);
       $table->timestamps();

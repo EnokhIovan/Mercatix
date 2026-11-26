@@ -53,8 +53,31 @@ export const getWalletTransactions = (page = 1) =>
 // Products
 export const getProducts = () => request("/products");
 
-export const getProduct = (id) =>
-  request(`/products/${id}`);
+export const getMyProducts = (userId) =>
+  request("/merchant/products", {
+    method: "POST"
+  });
+
+// export const getProduct = (id) =>
+//   request(`/products/${id}`);
+
+// Merchant Products
+export const createProduct = (product) =>
+  request("/products", {
+    method: "POST",
+    body: JSON.stringify(product),
+  });
+
+export const updateProduct = (id, product) =>
+  request(`/products/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(product),
+  });
+
+export const deleteProduct = (id) =>
+  request(`/products/${id}`, {
+    method: "DELETE",
+  });
 
 // Cart
 export const getCartItems = () => request("/cart");

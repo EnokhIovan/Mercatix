@@ -72,7 +72,6 @@ class ProductSeeder extends Seeder
           'name' => $data['name'],
           'category' => $data['category'],
           'price' => $data['price'],
-          'stock' => 20,
           'image' => $data['image'],
           'is_available' => true,
         ]

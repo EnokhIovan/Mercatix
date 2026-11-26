@@ -9,6 +9,7 @@ import NotFound from "../pages/NotFound";
 import CustomerExplore from "../pages/customer/Explore";
 import CustomerProfile from "../pages/customer/Profile";
 import DashboardRouter from "./DashboardRouter";
+import MerchantProduct from "../pages/merchant/Product";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -25,6 +26,8 @@ function AppRoutes() {
               <Route path="/dashboard" element={<DashboardRouter />} />
               <Route path="/explore" element={<CustomerExplore />} />
               <Route path="/profile" element={<CustomerProfile />} />
+              <Route path="/product" element=  {<MerchantProduct />}
+          />
             </Route>
 
             <Route path="*" element={<NotFound />} />

@@ -1,16 +1,16 @@
 
 import FooterLayout from "./FooterLayout";
 import Sidebar from "../components/Sidebar";
-import { getUser } from "../api/api";
-import { useEffect } from "react";
+// import { getUser } from "../api/api";
+// import { useEffect } from "react";
 
 export default function PageLayout({ children, title, searchBox }) {
-  useEffect(() => {
-    getUser()
-      .then((response) => {
-        setUser
-      })
-  })
+  // useEffect(() => {
+  //   getUser()
+  //     .then((response) => {
+  //       setUser
+  //     })
+  // })
 
   return (
     <>
