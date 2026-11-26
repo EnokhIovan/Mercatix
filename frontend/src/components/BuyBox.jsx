@@ -1,14 +1,48 @@
+
 import { useState } from "react";
 import { useBuy } from "../context/BuyContext";
+import { transfer } from "../api/api";
 
 export default function BuyBox({ dataProduct }) {
+  console.log(dataProduct);
   const { buyBoxOpen, setBuyBoxOpen } = useBuy();
+
   const [quantity, setQuantity] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!buyBoxOpen || !dataProduct) return null;
 
   const price = Number(dataProduct.price);
   const subtotal = price * quantity;
+
+  const transferHandler = async () => {
+    if (!dataProduct) return;
+
+    const merchantId = dataProduct.merchant?.id;
+    const productId = dataProduct.id;
+
+    if (!merchantId || !productId) {
+      console.error("Data merchant atau produk tidak ditemukan.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await transfer(
+        merchantId,
+        productId,
+        subtotal,
+        "Pembayaran produk"
+      );
+
+      setBuyBoxOpen(false);
+    } catch (error) {
+      console.error("Transfer gagal:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-5">
@@ -79,7 +113,7 @@ export default function BuyBox({ dataProduct }) {
             <div className="flex items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1">
               <button
                 onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                disabled={quantity <= 1}
+                disabled={quantity <= 1 || isLoading}
                 className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-secondary)] transition hover:bg-[var(--lavender-bg)] hover:text-[var(--primary)] disabled:opacity-30"
               >
                 −
@@ -91,7 +125,7 @@ export default function BuyBox({ dataProduct }) {
 
               <button
                 onClick={() => setQuantity((prev) => Math.min(10, prev + 1))}
-                disabled={quantity >= 10}
+                disabled={quantity >= 10 || isLoading}
                 className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-secondary)] transition hover:bg-[var(--lavender-bg)] hover:text-[var(--primary)] disabled:opacity-30"
               >
                 +
@@ -112,8 +146,12 @@ export default function BuyBox({ dataProduct }) {
             </strong>
           </div>
 
-          <button className="w-full rounded-lg bg-[var(--primary)] py-3.5 text-sm font-bold text-white transition hover:bg-[var(--primary-hover)]">
-            Beli
+          <button
+            onClick={transferHandler}
+            disabled={isLoading}
+            className="w-full rounded-lg bg-[var(--primary)] py-3.5 text-sm font-bold text-white transition hover:bg-[var(--primary-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isLoading ? "Memproses..." : "Beli"}
           </button>
         </div>
       </div>

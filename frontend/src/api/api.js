@@ -33,12 +33,15 @@ export const topUp = (amount, description) =>
       description,
     }),
   });
-export const transfer = (target, amount) =>
+
+export const transfer = (merchantId, productId, amount, description) =>
   request("/wallet/transfer", {
     method: "POST",
     body: JSON.stringify({
-      target,
+      'merchant_id': merchantId,
+      'product_id': productId,
       amount,
+      description,
     }),
   });
 

@@ -10,14 +10,12 @@ class WalletSeeder extends Seeder
 {
   public function run(): void
   {
-    User::all()->each(function ($user) {
-      $wallet = Wallet::firstOrCreate([
-        'user_id' => $user->id,
-      ]);
-
-      if ($wallet->wasRecentlyCreated) {
-        $wallet->addBalance(100000, 'Saldo awal dummy');
-      }
-    });
+    User::whereIn('role', ['customer', 'merchant'])
+      ->each(function ($user) {
+        Wallet::firstOrCreate(
+          ['user_id' => $user->id],
+          ['balance' => 200000]
+        );
+      });
   }
 }

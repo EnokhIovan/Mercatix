@@ -29,10 +29,5 @@ class userSeeder extends Seeder
         'password' => Hash::make('password')
       ]
     );
-
-    Wallet::updateOrCreate(
-      ['user_id' => $customer->id],
-      ['balance' => 200000]
-    );
   }
 }

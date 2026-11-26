@@ -18,5 +18,5 @@ Route::middleware(AuthenticateToken::class)->group(function () {
   Route::post('/cart/action', [CartController::class, 'action']);
   Route::post('/cart/quantity', [CartController::class, 'quantity']);
   Route::post('/wallet/topup', [WalletController::class, 'topup']);
-  Route::post('/wallet/transfer', [WalletController::class, 'deduct']);
+  Route::post('/wallet/transfer', [WalletController::class, 'transfer']);
 });

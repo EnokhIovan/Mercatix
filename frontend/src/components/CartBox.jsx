@@ -80,6 +80,25 @@ export default function CartBox() {
     0,
   );
 
+  const transferHandler = async () => {
+      setIsLoading(true);
+  
+      try {
+        await transfer(
+          dataProduct.merchant_id,
+          dataProduct.id,
+          subtotal,
+          "Pembayaran produk"
+        );
+  
+        setBuyBoxOpen(false);
+      } catch (error) {
+        console.error("Transfer gagal:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
   if (!isCartOpen) return null;
 
   return (
@@ -270,6 +289,7 @@ export default function CartBox() {
           </div>
 
           <button
+            onClick={transferHandler}
             disabled={cartItems.length === 0}
             className="
               w-full rounded-lg
