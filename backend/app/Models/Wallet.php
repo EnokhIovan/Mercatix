@@ -34,7 +34,7 @@ class Wallet extends Model
     return $this->hasMany(WalletTransaction::class);
   }
 
-  public function addBalance($amount, $description = null)
+  public function addBalance($amount, $description = null, $type='top_up')
   {
     if ($amount <= 0) {
       throw ValidationException::withMessages([
@@ -42,7 +42,7 @@ class Wallet extends Model
       ]);
     }
 
-    return DB::transaction(function () use ($amount, $description) {
+    return DB::transaction(function () use ($amount, $description, $type) {
       $wallet = self::whereKey($this->id)
         ->lockForUpdate()
         ->firstOrFail();
@@ -50,7 +50,7 @@ class Wallet extends Model
       $wallet->increment('balance', $amount);
 
       return $wallet->transactions()->create([
-        'type' => 'top_up',
+        'type' => $type,
         'amount' => $amount,
         'description' => $description,
       ]);

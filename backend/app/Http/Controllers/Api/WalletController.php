@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Wallet;
 use App\Models\Merchant;
+use App\Models\Cart;
+use Illuminate\Validation\ValidationException;
 
 class WalletController extends Controller
 {
@@ -123,6 +125,115 @@ class WalletController extends Controller
     return response()->json([
       'message' => 'Saldo berhasil dikurangi.',
       'balance' => $wallet->fresh()->balance,
+    ]);
+  }
+
+  public function checkout(Request $request)
+  {
+    $user = $request->user();
+
+    $senderWallet = $user->wallet;
+
+    if (!$senderWallet) {
+      return response()->json([
+        'message' => 'Wallet pembeli tidak ditemukan.',
+      ], 404);
+    }
+
+    $cartItems = Cart::with('product')
+      ->where('user_id', $user->id)
+      ->get();
+
+    if ($cartItems->isEmpty()) {
+      throw ValidationException::withMessages([
+        'cart' => 'Keranjang masih kosong.',
+      ]);
+    }
+
+    // Kelompokkan produk berdasarkan merchant
+    $merchantGroups = $cartItems->groupBy(
+      fn ($item) => $item->product->merchant_id
+    );
+
+    $total = 0;
+
+    foreach ($cartItems as $item) {
+      if (!$item->product) {
+        throw ValidationException::withMessages([
+          'cart' => 'Ada produk yang sudah tidak tersedia.',
+        ]);
+      }
+
+      $total += $item->product->price * $item->quantity;
+    }
+
+    $total = round($total, 2);
+
+    DB::transaction(function () use (
+      $user,
+      $senderWallet,
+      $merchantGroups,
+      $total
+    ) {
+      // Pastikan saldo pembeli mencukupi
+      $senderWallet->refresh();
+
+      if ($senderWallet->balance < $total) {
+        throw ValidationException::withMessages([
+          'balance' => 'Saldo tidak mencukupi.',
+        ]);
+      }
+
+      // Potong saldo pembeli satu kali
+      $senderWallet->deductBalance(
+        $total,
+        'Pembayaran cart',
+        'transfer'
+      );
+
+      // Distribusikan pembayaran ke setiap merchant
+      foreach ($merchantGroups as $merchantId => $items) {
+        $merchant = Merchant::with('user.wallet')
+          ->findOrFail($merchantId);
+
+        $merchantWallet = $merchant->user->wallet;
+
+        if (!$merchantWallet) {
+          throw ValidationException::withMessages([
+            'wallet' => 'Wallet merchant tidak ditemukan.',
+          ]);
+        }
+
+        if ($merchantWallet->id === $senderWallet->id) {
+          throw ValidationException::withMessages([
+            'merchant' => 'Tidak bisa membeli produk sendiri.',
+          ]);
+        }
+
+        $merchantTotal = 0;
+
+        foreach ($items as $item) {
+          $merchantTotal +=
+            $item->product->price * $item->quantity;
+        }
+
+        $merchantTotal = round($merchantTotal, 2);
+
+        $merchantWallet->addBalance(
+          $merchantTotal,
+          'Pembayaran cart dari user',
+          'transfer'
+        );
+      }
+
+      // Hapus seluruh cart setelah pembayaran berhasil
+      Cart::where('user_id', $user->id)->delete();
+    });
+
+    return response()->json([
+      'message' => 'Checkout berhasil.',
+      'total' => $total,
+      'balance' => $senderWallet->fresh()->balance,
     ]);
   }
 }

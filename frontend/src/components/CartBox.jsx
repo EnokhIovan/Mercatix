@@ -1,16 +1,22 @@
+
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
-import { cartItemsAction, cartItemsQuantity } from "../api/api";
+import {
+  cartItemsAction,
+  cartItemsQuantity,
+  checkoutCart
+} from "../api/api";
 
 export default function CartBox() {
   const { isCartOpen, setCartItems, setIsCartOpen, cartItems, refreshCart } =
     useCart();
 
   const [loadingItems, setLoadingItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const setItemLoading = (productId, loading) => {
     setLoadingItems((items) =>
-      loading ? [...items, productId] : items.filter((id) => id !== productId),
+      loading ? [...items, productId] : items.filter((id) => id !== productId)
     );
   };
 
@@ -72,32 +78,32 @@ export default function CartBox() {
 
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
-    0,
+    0
   );
 
   const totalQuantity = cartItems.reduce(
     (total, item) => total + item.quantity,
-    0,
+    0
   );
 
   const transferHandler = async () => {
-      setIsLoading(true);
-  
-      try {
-        await transfer(
-          dataProduct.merchant_id,
-          dataProduct.id,
-          subtotal,
-          "Pembayaran produk"
-        );
-  
-        setBuyBoxOpen(false);
-      } catch (error) {
-        console.error("Transfer gagal:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (cartItems.length === 0 || isLoading) return;
+
+    setIsLoading(true);
+
+    try {
+      await checkoutCart();
+
+      await refreshCart();
+
+      setIsCartOpen(false);
+    } catch (error) {
+      console.error("Pembayaran gagal:", error);
+      alert(error.message || "Pembayaran gagal");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!isCartOpen) return null;
 
@@ -112,11 +118,11 @@ export default function CartBox() {
       {/* Cart Modal */}
       <div
         className="
-        relative z-50 flex max-h-[85vh] w-full max-w-[480px]
-        flex-col overflow-hidden rounded-2xl
-        border border-[var(--border)]
-        bg-[var(--surface)] shadow-[var(--shadow-lg)]
-      "
+          relative z-50 flex max-h-[85vh] w-full max-w-[480px]
+          flex-col overflow-hidden rounded-2xl
+          border border-[var(--border)]
+          bg-[var(--surface)] shadow-[var(--shadow-lg)]
+        "
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border)] p-6">
@@ -149,9 +155,11 @@ export default function CartBox() {
           {cartItems.length === 0 ? (
             <div className="flex min-h-[180px] flex-col items-center justify-center text-center">
               <span className="text-4xl">🛒</span>
+
               <h3 className="mt-3 font-bold text-[var(--text-primary)]">
                 Your cart is empty
               </h3>
+
               <p className="mt-1 text-sm text-[var(--text-muted)]">
                 Add some products to get started!
               </p>
@@ -159,7 +167,6 @@ export default function CartBox() {
           ) : (
             cartItems.map((item) => {
               const isLoading = loadingItems.includes(item.product_id);
-              // console.log(item);
 
               return (
                 <div
@@ -203,10 +210,10 @@ export default function CartBox() {
                         {/* Delete */}
                         <div
                           className="
-                          flex items-center gap-2 rounded-lg
-                          border border-[var(--border)]
-                          bg-[var(--surface)] p-1
-                        "
+                            flex items-center gap-2 rounded-lg
+                            border border-[var(--border)]
+                            bg-[var(--surface)] p-1
+                          "
                         >
                           <button
                             onClick={() => handleDelete(item.id)}
@@ -228,10 +235,10 @@ export default function CartBox() {
                         {/* Quantity Control */}
                         <div
                           className="
-                          flex items-center gap-2 rounded-lg
-                          border border-[var(--border)]
-                          bg-[var(--surface)] p-1
-                        "
+                            flex items-center gap-2 rounded-lg
+                            border border-[var(--border)]
+                            bg-[var(--surface)] p-1
+                          "
                         >
                           <button
                             onClick={() => updateQuantity(item, -1)}
@@ -281,7 +288,9 @@ export default function CartBox() {
         {/* Footer */}
         <div className="space-y-5 border-t border-[var(--border)] p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[var(--text-secondary)]">Total</span>
+            <span className="text-sm text-[var(--text-secondary)]">
+              Total
+            </span>
 
             <strong className="text-lg font-extrabold text-[var(--text-primary)]">
               Rp{subtotal.toLocaleString("id-ID")}
@@ -290,7 +299,7 @@ export default function CartBox() {
 
           <button
             onClick={transferHandler}
-            disabled={cartItems.length === 0}
+            disabled={cartItems.length === 0 || isLoading}
             className="
               w-full rounded-lg
               bg-[var(--primary)] py-3.5
@@ -300,7 +309,7 @@ export default function CartBox() {
               disabled:cursor-not-allowed disabled:opacity-40
             "
           >
-            Buy Now
+            {isLoading ? "Processing..." : "Buy Now"}
           </button>
         </div>
       </div>

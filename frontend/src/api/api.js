@@ -63,6 +63,11 @@ export const cartItemsQuantity = (product_id, quantity) =>
     method: "POST",
     body: JSON.stringify({product_id, quantity}),
   });
+  export const checkoutCart = async () => {
+  return request("/wallet/checkout", {
+    method: "POST",
+  });
+};
 
 // Customers
 export const getCustomers = () => request("/customers");
