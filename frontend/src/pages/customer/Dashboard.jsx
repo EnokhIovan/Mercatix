@@ -1,7 +1,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import PageLayout from "../../layouts/PageLayout";
-import { getBalance, topUp, transfer } from "../../api/api";
+import { getBalance, getWalletTransactions, topUp, transfer } from "../../api/api";
 
 const initialTransactions = [
   { id: 1, type: "out", title: "Pembelian di Dapur Mama", category: "Pembelian", amount: 36000, date: "2026-11-10T12:24:00" },
@@ -168,7 +168,15 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [balance, setBalance] = useState(0);
   const [hideBalance, setHideBalance] = useState(false);
-  const [transactions] = useState(initialTransactions);
+  const [transactions, setTransactions] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState("");
+  const [historyPagination, setHistoryPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    per_page: 10,
+    total: 0,
+  });
   const [historyFilter, setHistoryFilter] = useState("all");
 
   const [loading, setLoading] = useState(true);
@@ -232,8 +240,49 @@ export default function Dashboard() {
     }
   };
 
+  // Fetch riwayat transaksi dari API
+  const fetchTransactions = async (page = 1) => {
+    try {
+      setHistoryLoading(true);
+      setHistoryError("");
+
+      const result = await getWalletTransactions(page);
+
+      const transactionList = (result.data || []).map((transaction) => {
+        const categoryMap = {
+          top_up: "Top Up",
+          payment: "Pembelian",
+          transfer: "Transfer",
+        };
+
+        return {
+          id: transaction.id,
+          type: transaction.type === "top_up" ? "in" : "out",
+          title: transaction.description || categoryMap[transaction.type] || "Transaksi",
+          category: categoryMap[transaction.type] || "Transaksi",
+          amount: Number(transaction.amount),
+          date: transaction.created_at,
+        };
+      });
+
+      setTransactions(transactionList);
+      setHistoryPagination(result.pagination || {
+        current_page: 1,
+        last_page: 1,
+        per_page: 10,
+        total: transactionList.length,
+      });
+    } catch (error) {
+      console.error("Fetch transactions error:", error);
+      setHistoryError(error.message || "Gagal mengambil riwayat transaksi.");
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchBalance();
+    fetchTransactions();
   }, []);
 
   // Modal keyboard handling
@@ -341,6 +390,7 @@ export default function Dashboard() {
       const updatedBalance = getResponseBalance(result);
 
       setBalance(updatedBalance);
+      await fetchTransactions(historyPagination.current_page);
 
       setToast(
         `${config.title} sebesar ${formatPrice(value)} berhasil.`
@@ -462,12 +512,12 @@ export default function Dashboard() {
                   Top Up Saldo
                 </button>
 
-                <button
+                {/* <button
                   className="rounded-[var(--radius-md)] border border-white/35 bg-transparent px-[22px] py-[13px] text-[13px] font-bold text-white transition hover:bg-white/[0.12] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--lavender)] focus-visible:outline-offset-2"
                   onClick={() => openAction("transfer")}
                 >
                   Transfer
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -477,7 +527,7 @@ export default function Dashboard() {
           </section>
 
           {/* Quick actions */}
-          <section className="mb-10">
+          {/* <section className="mb-10">
             <div className="mb-5">
               <h2 className="m-0 text-xl font-extrabold text-[var(--text-primary)]">Fitur Cepat</h2>
               <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">Pilih layanan yang kamu butuhkan.</p>
@@ -496,34 +546,10 @@ export default function Dashboard() {
                 </button>
               ))}
             </div>
-          </section>
-
-          {/* Summary */}
-          <section className="mb-10">
-            <div className="mb-5">
-              <h2 className="m-0 text-xl font-extrabold text-[var(--text-primary)]">Ringkasan Bulan Ini</h2>
-              <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">{monthLabel}</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-5 max-sm:grid-cols-1 max-sm:gap-3">
-              <div className="flex flex-col gap-2 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-6 py-5">
-                <span className="text-[13px] text-[var(--text-secondary)]">Uang masuk</span>
-                <strong className="text-[22px] font-extrabold tracking-[-0.5px] text-[var(--success)]">
-                  {formatPrice(summary.income)}
-                </strong>
-              </div>
-
-              <div className="flex flex-col gap-2 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-6 py-5">
-                <span className="text-[13px] text-[var(--text-secondary)]">Uang keluar</span>
-                <strong className="text-[22px] font-extrabold tracking-[-0.5px] text-[var(--text-primary)]">
-                  {formatPrice(summary.expense)}
-                </strong>
-              </div>
-            </div>
-          </section>
-
+          </section> */}
+          
           {/* Recent transactions */}
-          <section className="mb-10">
+          {/* <section className="mb-10">
             <div className="mb-5 flex items-start justify-between gap-3">
               <div className="mb-5">
                 <h2 className="m-0 text-xl font-extrabold text-[var(--text-primary)]">Transaksi Terakhir</h2>
@@ -539,7 +565,7 @@ export default function Dashboard() {
             </div>
 
             {renderTransactionList(transactions.slice(0, 5))}
-          </section>
+          </section> */}
         </>
       )}
 
@@ -553,7 +579,7 @@ export default function Dashboard() {
             </div>
 
             <span className="whitespace-nowrap text-[13px] font-bold text-[var(--primary)]">
-              {filteredTransactions.length} Transaksi
+              {historyPagination.total} Transaksi
             </span>
           </div>
 
@@ -569,15 +595,52 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {renderTransactionList(filteredTransactions)}
+          {historyLoading ? (
+            <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-5 py-10 text-center text-sm text-[var(--text-secondary)]">
+              Memuat riwayat transaksi...
+            </div>
+          ) : historyError ? (
+            <div className="rounded-[var(--radius-lg)] border border-red-200 bg-red-50 px-5 py-6 text-center">
+              <p className="mb-3 text-sm text-[var(--danger)]">{historyError}</p>
+              <button
+                className="rounded-[var(--radius-md)] bg-[var(--primary)] px-4 py-2 text-xs font-semibold text-white"
+                onClick={() => fetchTransactions(historyPagination.current_page)}
+              >
+                Coba lagi
+              </button>
+            </div>
+          ) : (
+            <>
+              {renderTransactionList(filteredTransactions)}
+
+              {historyPagination.last_page > 1 && (
+                <div className="mt-5 flex items-center justify-between gap-3">
+                  <button
+                    className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] disabled:cursor-not-allowed disabled:opacity-40"
+                    onClick={() => fetchTransactions(historyPagination.current_page - 1)}
+                    disabled={historyPagination.current_page <= 1 || historyLoading}
+                  >
+                    Sebelumnya
+                  </button>
+
+                  <span className="text-xs text-[var(--text-muted)]">
+                    Halaman {historyPagination.current_page} dari {historyPagination.last_page}
+                  </span>
+
+                  <button
+                    className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] disabled:cursor-not-allowed disabled:opacity-40"
+                    onClick={() => fetchTransactions(historyPagination.current_page + 1)}
+                    disabled={historyPagination.current_page >= historyPagination.last_page || historyLoading}
+                  >
+                    Berikutnya
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </section>
       )}
-
-      {/* Footer */}
-      <footer className="mt-[60px] border-t border-[var(--border)] py-6 text-center text-xs text-[var(--text-muted)]">
-        © 2026 Mercatix. All rights reserved.
-      </footer>
-
+      
       {/* Modal */}
       {config && (
         <div className="fixed inset-0 z-[60] flex items-center transition-opacity duration-200 justify-center bg-[rgba(24,12,45,0.45)] p-4" onClick={closeAction}>

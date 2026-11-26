@@ -1,4 +1,3 @@
-
 const API_URL = "http://localhost:8000/api";
 
 async function request(endpoint, options = {}) {
@@ -25,6 +24,7 @@ async function request(endpoint, options = {}) {
 
 // Wallet
 export const getBalance = () => request("/wallet");
+
 export const topUp = (amount, description) =>
   request("/wallet/topup", {
     method: "POST",
@@ -38,12 +38,15 @@ export const transfer = (merchantId, productId, amount, description) =>
   request("/wallet/transfer", {
     method: "POST",
     body: JSON.stringify({
-      'merchant_id': merchantId,
-      'product_id': productId,
+      merchant_id: merchantId,
+      product_id: productId,
       amount,
       description,
     }),
   });
+
+export const getWalletTransactions = (page = 1) =>
+  request(`/wallet/transactions?page=${page}`);
 
 // Products
 export const getProducts = () => request("/products");
@@ -53,17 +56,20 @@ export const getProduct = (id) =>
 
 // Cart
 export const getCartItems = () => request("/cart");
+
 export const cartItemsAction = (product_id, action) =>
   request("/cart/action", {
     method: "POST",
-    body: JSON.stringify({product_id, action}),
+    body: JSON.stringify({ product_id, action }),
   });
+
 export const cartItemsQuantity = (product_id, quantity) =>
   request("/cart/quantity", {
     method: "POST",
-    body: JSON.stringify({product_id, quantity}),
+    body: JSON.stringify({ product_id, quantity }),
   });
-  export const checkoutCart = async () => {
+
+export const checkoutCart = async () => {
   return request("/wallet/checkout", {
     method: "POST",
   });
